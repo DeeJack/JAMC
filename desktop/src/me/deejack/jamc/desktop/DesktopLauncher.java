@@ -11,12 +11,12 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 800;
-		config.height = 400;
-		config.title = "Drop";
-		config.vSyncEnabled = false;
-		config.pauseWhenBackground = false;
-		config.pauseWhenMinimized = true;
-		//new LwjglApplication(new JAMC(), config);
-		new LwjglApplication(new DropGame(), config);
+		config.height = 480;
+		config.title = "JAMC";
+		//config.vSyncEnabled = false;
+		//config.pauseWhenBackground = false;
+		//config.pauseWhenMinimized = true;
+		new LwjglApplication(new JAMC(), config);
+		//new LwjglApplication(new DropGame(), config);
 	}
 }
