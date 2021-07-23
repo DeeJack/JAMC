@@ -1,10 +1,11 @@
-package me.deejack.jamc;
+package me.deejack.jamc.world;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
 
+import me.deejack.jamc.Event;
 import me.deejack.jamc.gameobjects.Drawable;
 
 public class Block implements Drawable {
