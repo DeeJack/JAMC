@@ -1,12 +1,10 @@
 package me.deejack.jamc.input;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 import me.deejack.jamc.player.Player;
@@ -52,12 +50,14 @@ public class PlayerMovementProcessor implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        System.out.println("AAAAAA");
         // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        System.out.println("asd");
         int width = Gdx.graphics.getWidth();
         int height = Gdx.graphics.getHeight();
         var camera = player.getCamera();
@@ -83,62 +83,40 @@ public class PlayerMovementProcessor implements InputProcessor {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
+        System.out.println("SS");
         // TODO Auto-generated method stub
         return false;
     }
 
     public void update(float gameDeltaTime) {
-        final int movementSpeed = 20;
+        final int movementSpeed = 2;
         var camera = player.getCamera();
         for (var keyCode : pressedKey) {
             switch (keyCode) {
                 case Keys.A: {
-                    var cosineAngleBetween = (Vector3.X.dot(camera.direction.cpy().crs(camera.up)))
-                            / (camera.direction.cpy().crs(camera.up).len());
-                    float xMovement = -movementSpeed * gameDeltaTime * (float) cosineAngleBetween;
-                    float zMovement = -movementSpeed * gameDeltaTime
-                            * (float) Math.sqrt(1 - cosineAngleBetween * cosineAngleBetween);
-                    camera.translate(xMovement, 0, zMovement);
-                    // player.getCamera().translate(-2 * gameDeltaTime, 0, 0);
+                    var direction = camera.direction.cpy();
+                    var horizontal = direction.crs(camera.up);
+                    horizontal.scl(-2 * gameDeltaTime, 0, -2 * gameDeltaTime).nor();
+                    camera.translate(direction);
                     break;
                 }
                 case Keys.D: {
-                    var cosineAngleBetween = (Vector3.X.dot(camera.direction.cpy().crs(camera.up)))
-                            / (Vector3.X.len() * camera.direction.cpy().crs(camera.up).len());
-                    float xMovement = movementSpeed * gameDeltaTime * (float) cosineAngleBetween;
-                    float zMovement = -movementSpeed * gameDeltaTime
-                            * (float) Math.sqrt(1 - cosineAngleBetween * cosineAngleBetween);
-                    camera.translate(xMovement, 0, zMovement);
+                    var direction = camera.direction.cpy();
+                    var horizontal = direction.crs(camera.up);
+                    horizontal.scl(2 * gameDeltaTime, 0, 2 * gameDeltaTime).nor();
+                    camera.translate(direction);
                     break;
                 }
-                case Keys.W: {
-                    // Calculate the cosine of the angle between the camera direction and the X axis
-                    // Using the formula <DIR, X> / (||DIR|| * ||X||) where ||X|| is one
+                case Keys.W: {                    
                     var direction = camera.direction.cpy();
-                    var cosineAngleBetween = (direction.dot(Vector3.X)) / (Vector3.X.len() * camera.direction.len());
-                    var sineAngleBetween = (float) Math.sqrt(1 - cosineAngleBetween * cosineAngleBetween);
-                    System.out.println("Pos: " + camera.position + ", dir: " + direction + "cos: " + cosineAngleBetween
-                            + ", sin: " + sineAngleBetween);
-                    float xMovement = movementSpeed * gameDeltaTime * (float) cosineAngleBetween;
-                    float zMovement = -movementSpeed * gameDeltaTime * (float) sineAngleBetween;
-                    if (direction.z > 0)
-                        zMovement *= -1;
-                    camera.translate(new Vector3(xMovement, 0, zMovement));
+                    direction.scl(2 * gameDeltaTime, 0, 2 * gameDeltaTime).nor();
+                    camera.translate(direction);
                     break;
                 }
                 case Keys.S: {
-                    // Calculate the cosine of the angle between the camera direction and the X axis
-                    // Using the formula <DIR, X> / (||DIR|| * ||X||) where ||X|| is one
                     var direction = camera.direction.cpy();
-                    var cosineAngleBetween = (direction.dot(Vector3.X)) / (Vector3.X.len() * camera.direction.len());
-                    var sineAngleBetween = (float) Math.sqrt(1 - cosineAngleBetween * cosineAngleBetween);
-                    System.out.println("Pos: " + camera.position + ", dir: " + direction + "cos: " + cosineAngleBetween
-                            + ", sin: " + sineAngleBetween);
-                    float xMovement = -movementSpeed * gameDeltaTime * (float) cosineAngleBetween;
-                    float zMovement = movementSpeed * gameDeltaTime * (float) sineAngleBetween;
-                    if (direction.z > 0)
-                        zMovement *= -1;
-                    camera.translate(new Vector3(xMovement, 0, zMovement));
+                    direction.scl(-2 * gameDeltaTime, 0, -2 * gameDeltaTime).nor();
+                    camera.translate(direction);
                     break;
                 }
                 case Keys.SHIFT_LEFT:
