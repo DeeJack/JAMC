@@ -1,4 +1,4 @@
-package me.deejack.jamc.input;
+package me.deejack.jamc;
 
 public enum Events {
     RIGHT_CLICK,

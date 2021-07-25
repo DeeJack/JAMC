@@ -1,9 +1,7 @@
-package me.deejack.jamc.input;
+package me.deejack.jamc;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
-
-import me.deejack.jamc.Event;
 
 public class KeyPressEvent implements Event<KeyPressData> {
     private final Camera camera;
@@ -14,7 +12,6 @@ public class KeyPressEvent implements Event<KeyPressData> {
 
     @Override
     public void onEvent(KeyPressData data) {
-        System.out.println(Keys.toString(data.getKeyCode()));
     }
 }
 
