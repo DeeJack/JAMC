@@ -26,9 +26,9 @@ public class Player {
     }
 
     public void rotateCameraY(Vector3 rotationAxis, float angle) {
-        
-        angle %= 90;
-        if ((cameraAngle <= -90 && angle < 0) || (cameraAngle >= 90 && angle > 0))
+        final int maxAngle = 85;
+        angle %= maxAngle;
+        if ((cameraAngle <= -maxAngle && angle < 0) || (cameraAngle >= maxAngle&& angle > 0))
             return;
         rotateCameraX(rotationAxis, angle);
         cameraAngle += angle;

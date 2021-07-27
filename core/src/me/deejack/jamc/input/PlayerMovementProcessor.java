@@ -60,19 +60,12 @@ public class PlayerMovementProcessor implements InputProcessor {
 
         if (screenX - width / 2 != 0) {
             var angle = -1 * 20 * (screenX - width / 2) * Gdx.graphics.getDeltaTime();
-            // camera.rotate(new Vector3(0, 1, 0), angle);
             player.rotateCameraX(Vector3.Y, angle);
-            //camera.rotateAround(camera.position, new Vector3(0, 1, 0), angle);
         }
         if (screenY - height / 2 != 0) {
             var angle = -1 * 20 * (screenY - height / 2) * Gdx.graphics.getDeltaTime();
-            // camera.rotate(camera.up, angle);
             var rotationAxis = camera.direction.cpy().crs(camera.up);
             player.rotateCameraY(rotationAxis, angle);
-            //camera.rotateAround(camera.position, rotationAxis, angle);
-            // if (player.getCamera().up.isPerpendicular(new Vector3(1, 0, 0)))
-
-            // player.getCamera().rotate(new Vector3(1, 0, 0), angle);
         }
         Gdx.input.setCursorPosition(width / 2, height / 2);
         return true;
@@ -123,9 +116,9 @@ public class PlayerMovementProcessor implements InputProcessor {
                     break;
             }
             for (var block: world.getBlocks())
-                block.unselect();
+                block.unmark();
             for (var block : world.getNearBlocks(player.getCamera().position)) {
-                block.select();
+                block.mark();
             }
         }
     }

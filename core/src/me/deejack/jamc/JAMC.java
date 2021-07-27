@@ -3,15 +3,11 @@ package me.deejack.jamc;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Cursor.SystemCursor;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import me.deejack.jamc.game.Hud;
 import me.deejack.jamc.game.UserInterface;
 import me.deejack.jamc.input.GameInputProcessor;
 import me.deejack.jamc.input.PlayerMovementProcessor;
@@ -20,15 +16,11 @@ import me.deejack.jamc.player.Player;
 import me.deejack.jamc.world.World;
 
 public class JAMC implements ApplicationListener {
-	private final float GAME_FACTOR = 2;
-	private final UserInterface userInterface = new UserInterface();
+	private final float GAME_TIME_FACTOR = 2;
 	private PlayerMovementProcessor movementProcessor;
-	private UIInputProcessor uiInputProcessor;
 	private World world;
 	private Player currentPlayer;
-	private OrthographicCamera hudCamera;
-	private BitmapFont font;
-	private SpriteBatch batch;
+	private Hud hud;
 
 	@Override
 	public void create() {
@@ -43,18 +35,13 @@ public class JAMC implements ApplicationListener {
 		camera.update();
 		currentPlayer = new Player(camera);
 
-		hudCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		// hudCamera.setToOrtho(false, Gdx.graphics.getWidth(),
-		hudCamera.position.set(Gdx.graphics.getWidth() / 2.F, Gdx.graphics.getHeight() / 2.F, 1.F);
-		batch = new SpriteBatch();
-
-		world = new World();
+		world = new World(); // Create the world
 		world.create();
 
-		font = new BitmapFont();
+		hud = new Hud(); // Initialize the hud (crosshair, fps counter etc.)
+		hud.create();
 
-		Gdx.input.setCursorCatched(true);
-		// Gdx.graphics.setSystemCursor(SystemCursor.Crosshair);
+		Gdx.input.setCursorCatched(true); // Hide the cursor
 		Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 
 		// Face culling let openGL render only the faces the camera is seeing, not the
@@ -64,8 +51,10 @@ public class JAMC implements ApplicationListener {
 		// By changing the front face it's possible to see that it's actually working,
 		// as only the back would be loaded using the code in the line after this
 		// Gdx.gl20.glFrontFace(GL20.GL_CW);
+		
+		// Add the input processors, first the UI, then the logic part (breaking/placing blocks), then the movement 
 		InputMultiplexer multipleInput = new InputMultiplexer();
-		uiInputProcessor = new UIInputProcessor(userInterface);
+		var uiInputProcessor = new UIInputProcessor(new UserInterface());
 		movementProcessor = new PlayerMovementProcessor(currentPlayer, world);
 
 		multipleInput.addProcessor(uiInputProcessor);
@@ -75,32 +64,31 @@ public class JAMC implements ApplicationListener {
 	}
 
 	public void render() {
-		float deltaTime = Gdx.graphics.getDeltaTime();
-		float gameDeltaTime = deltaTime * GAME_FACTOR;
-		//if (gameDeltaTime > 0.033f)
-		movementProcessor.update(gameDeltaTime);
+		float gameDeltaTime = Gdx.graphics.getDeltaTime() * GAME_TIME_FACTOR;
+		movementProcessor.update(gameDeltaTime); // Process the pressed keys
 
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		//Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		ScreenUtils.clear(1, 0, 0, 1);
 
-		currentPlayer.getCamera().update();
-		world.render(currentPlayer.getCamera());
+		world.render(currentPlayer.getCamera()); // render the world
 
-		hudCamera.update();
-		batch.setProjectionMatrix(hudCamera.combined);
-		batch.begin();
-		font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, hudCamera.viewportHeight);
-		batch.end();
+		// Hud
+		hud.render();
 	}
 
 	@Override
 	public void dispose() {
 		world.dispose();
+		hud.dispose();
 	}
 
 	@Override
 	public void resize(int width, int height) {
+		currentPlayer.getCamera().viewportHeight = height;
+		currentPlayer.getCamera().viewportWidth = width;
+		currentPlayer.getCamera().update();
+		hud.resize(width, height);
 	}
 
 	@Override
