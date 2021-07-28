@@ -23,6 +23,7 @@ import me.deejack.jamc.game.utils.DebugHud;
 import me.deejack.jamc.game.utils.DebugHud.Line;
 
 public class World {
+	public static final int BLOCK_DISTANCE = 5;
 	private Environment environment;
 	private ModelBatch batch;
 	private Array<ModelInstance> instances;

@@ -62,4 +62,8 @@ public class Hud {
         font.dispose();
         crosshair.dispose();
     }
+
+	public void selectInventoryBarSlot(int slot) {
+		inventoryBar.selectSlot(slot);
+	}
 }

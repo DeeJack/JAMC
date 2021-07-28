@@ -14,10 +14,23 @@ public class UIInputProcessor implements InputProcessor {
 
     @Override
     public boolean keyDown(int keyCode) {
+        if (ui.isGamePaused() && keyCode != Keys.ESCAPE)
+            return true;
         switch (keyCode) {
-            case Keys.ESCAPE:
-                ui.escMenu();
-                return true;
+        case Keys.ESCAPE:
+            ui.escMenu();
+            return true;
+        case Keys.NUM_1:
+        case Keys.NUM_2:
+        case Keys.NUM_3:
+        case Keys.NUM_4:
+        case Keys.NUM_5:
+        case Keys.NUM_6:
+        case Keys.NUM_7:
+        case Keys.NUM_8:
+        case Keys.NUM_9:
+            ui.selectSlot(keyCode - 8);
+            return true;
         }
         return ui.isGamePaused();
     }

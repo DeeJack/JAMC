@@ -54,7 +54,7 @@ public class JAMC implements ApplicationListener {
 		
 		// Add the input processors, first the UI, then the logic part (breaking/placing blocks), then the movement 
 		InputMultiplexer multipleInput = new InputMultiplexer();
-		var uiInputProcessor = new UIInputProcessor(new UserInterface());
+		var uiInputProcessor = new UIInputProcessor(new UserInterface(hud));
 		movementProcessor = new PlayerMovementProcessor(currentPlayer, world);
 
 		multipleInput.addProcessor(uiInputProcessor);
