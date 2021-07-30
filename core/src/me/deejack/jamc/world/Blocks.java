@@ -5,10 +5,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public enum Blocks {
   STONE("Stone", 0, 1, 1, 1, 1, 1, 1),
@@ -16,6 +20,7 @@ public enum Blocks {
   ASD("asd", 2, 0, 1, 2, 3, 4, 5), GRASS("Grass", 1, 0, 2, 3, 3, 3, 3);
 
   private final static int TEXTURE_SIZE = 16;
+  private final static Map<Blocks, Model> cache = new HashMap<>();
 
   private final String name;
   private final int id;
@@ -39,6 +44,10 @@ public enum Blocks {
   }
 
   public Block createBlock(int x, int y, int z, Texture fullTexture, TextureRegion[][] tiles) {
+    if (cache.containsKey(this)) {
+      return new Block(name, id, new Coordinates(x, y, z), cache.get(this));
+    }
+    System.out.println("Creating model");
     int attributes = Usage.Position | Usage.Normal | Usage.TextureCoordinates;
     var modelBuilder = new ModelBuilder();
     modelBuilder.begin();
@@ -63,6 +72,7 @@ public enum Blocks {
     meshBuilder.rect(new Vector3(2, -2, 2), new Vector3(2, -2, -2), new Vector3(2, 2, -2),
             new Vector3(2, 2, 2), new Vector3(1, 0, 0));
     var model = modelBuilder.end();
+    cache.put(this, model);
 
     return new Block(name, id, new Coordinates(x, y, z), model);
   }

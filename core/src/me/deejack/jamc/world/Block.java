@@ -1,5 +1,6 @@
 package me.deejack.jamc.world;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -12,9 +13,9 @@ public class Block implements Drawable {
   private final String name;
   private final int id;
   //private Texture texture;
-  private Coordinates coordinates;
-  private ModelInstance modelInstance;
-  private BoundingBox boundingBox = new BoundingBox();
+  private final Coordinates coordinates;
+  private final ModelInstance modelInstance;
+  private final BoundingBox boundingBox = new BoundingBox();
   private boolean selected = false;
 
   public Block(String name, int id, Coordinates coordinates, Model model) {
@@ -61,5 +62,10 @@ public class Block implements Drawable {
 
   public boolean isSelected() {
     return selected;
+  }
+
+  public boolean isVisible(Camera cam) {
+    return cam.frustum.sphereInFrustum(modelInstance.transform.getTranslation(new Vector3()).add(boundingBox.getCenter(new Vector3())),
+            World.BLOCK_DISTANCE);
   }
 }

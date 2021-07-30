@@ -130,3 +130,5 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 >>>>>>> 4789c6b258c74947e5be0a42af5af8b4f1cc6016
+
+core/src/badlogic/*

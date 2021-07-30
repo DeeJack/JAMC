@@ -9,6 +9,7 @@ public class DesktopLauncher {
     Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
     config.setTitle("JAMC");
     config.useVsync(false);
+    config.setWindowedMode(1280, 720);
     //config.vSyncEnabled = false;
     //config.pauseWhenBackground = false;
     //config.pauseWhenMinimized = true;

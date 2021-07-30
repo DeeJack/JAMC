@@ -1,4 +1,4 @@
-package me.deejack.jamc;
+package me.deejack.jamc.events;
 
 import com.badlogic.gdx.graphics.Camera;
 

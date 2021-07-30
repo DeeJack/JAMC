@@ -5,9 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.deejack.jamc.game.Hud;
 import me.deejack.jamc.game.UserInterface;
+import me.deejack.jamc.input.DebugInputProcessor;
 import me.deejack.jamc.input.GameInputProcessor;
 import me.deejack.jamc.input.PlayerMovementProcessor;
 import me.deejack.jamc.input.UIInputProcessor;
@@ -15,17 +17,17 @@ import me.deejack.jamc.player.Player;
 import me.deejack.jamc.world.World;
 
 public class JAMC implements ApplicationListener {
-  private final float GAME_TIME_FACTOR = 2;
+  public final static float GAME_TIME_FACTOR = 2;
+  public final static boolean DEBUG = true;
   private PlayerMovementProcessor movementProcessor;
   private World world;
   private Player currentPlayer;
   private Hud hud;
+  private GLProfiler profiler;
 
   @Override
   public void create() {
-    var camera = new PerspectiveCamera(70, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // Set the width,
-    // height
-    // and a FOV of 70
+    var camera = new PerspectiveCamera(90, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // Set the width, height and a FOV of 70
     camera.position.set(10f, 10f, 10f); // we set the position 10 pixels to the right, 10 up and 10 to the back (z
     // is positive towards the viewer)
     camera.lookAt(0f, 0f, 0f); // We look at the origin, where the object will be placed
@@ -56,13 +58,21 @@ public class JAMC implements ApplicationListener {
     var uiInputProcessor = new UIInputProcessor(new UserInterface(hud));
     movementProcessor = new PlayerMovementProcessor(currentPlayer, world);
 
+    if (DEBUG)
+      multipleInput.addProcessor(new DebugInputProcessor(hud.getCamera()));
+
     multipleInput.addProcessor(uiInputProcessor);
     multipleInput.addProcessor(new GameInputProcessor(world, currentPlayer));
     multipleInput.addProcessor(movementProcessor);
     Gdx.input.setInputProcessor(multipleInput);
+
+    profiler = new GLProfiler(Gdx.graphics);
+    profiler.enable();
   }
 
   public void render() {
+    profiler.reset();
+
     float gameDeltaTime = Gdx.graphics.getDeltaTime() * GAME_TIME_FACTOR;
     movementProcessor.update(gameDeltaTime); // Process the pressed keys
 
@@ -74,6 +84,14 @@ public class JAMC implements ApplicationListener {
 
     // Hud
     hud.render();
+
+    var drawCalls = profiler.getDrawCalls();
+    var textureBinds = profiler.getTextureBindings();
+    var shadersSwitches = profiler.getShaderSwitches();
+    var glCalls = profiler.getCalls();
+    var vertexes = profiler.getVertexCount();
+    var fps = Gdx.graphics.getFramesPerSecond();
+    System.out.println("Draw calls: " + drawCalls + ", textureBinds: " + textureBinds + ", fps: " + fps + ", shadersSwitches: " + shadersSwitches + ", glCalls: " + glCalls + ", vertexCount: " + vertexes.total);
   }
 
   @Override

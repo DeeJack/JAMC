@@ -1,12 +1,15 @@
 package me.deejack.jamc.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import me.deejack.jamc.JAMC;
+import me.deejack.jamc.game.utils.DebugHud;
 
 public class Hud {
   private OrthographicCamera hudCamera;
@@ -45,6 +48,13 @@ public class Hud {
     batch.draw(crosshair, (hudCamera.viewportWidth / 2) - (crosshair.getWidth() / 2), (hudCamera.viewportHeight / 2) - (crosshair.getHeight() / 2));
     inventoryBar.render(batch, hudCamera.viewportWidth);
 
+    if (!JAMC.DEBUG)
+      return;
+    for (var text : DebugHud.INSTANCE.getTextToRender()) {
+      batch.setProjectionMatrix(hudCamera.combined);
+      font.draw(batch, text.text(), text.x(), text.y());
+    }
+
     batch.end();
   }
 
@@ -64,5 +74,9 @@ public class Hud {
 
   public void selectInventoryBarSlot(int slot) {
     inventoryBar.selectSlot(slot);
+  }
+
+  public Camera getCamera() {
+    return hudCamera;
   }
 }
