@@ -13,8 +13,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import me.deejack.jamc.game.utils.DebugHud;
-import me.deejack.jamc.game.utils.DebugHud.Line;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,21 +28,19 @@ public class World {
 
   private ModelCache modelCache;
 
-  private TextureRegion[][] tiles;
-  private Texture fullTexture;
+  private final TextureRegion[][] tiles;
+  private final Texture fullTexture;
+
+  public World(TextureRegion[][] tiles, Texture fullTexture) {
+    this.tiles = tiles;
+    this.fullTexture = fullTexture;
+  }
 
   public void create() {
     batch = new ModelBatch();
     environment = new Environment();
     environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1.f));
     environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-
-    final int TEXTURE_SIZE = 16;
-    var textureAtlas = new TextureAtlas(Gdx.files.internal("models/minecraft.atlas"));
-    var cubeTextureRegion = textureAtlas.findRegion("minecraft");
-    cubeTextureRegion.setRegionX(2);
-    fullTexture = cubeTextureRegion.getTexture();
-    tiles = cubeTextureRegion.split(TEXTURE_SIZE, TEXTURE_SIZE);
     blocks = new ArrayList<>();
     instances = new Array<>();
 
@@ -55,8 +51,6 @@ public class World {
         Block newBlock = Blocks.GRASS.createBlock(i * BLOCK_DISTANCE, 0, j * BLOCK_DISTANCE, fullTexture, tiles);
         blocks.add(newBlock);
         instances.add(newBlock.getModel());
-        //Block grass = Blocks.GRASS.createBlock(i * 5, 0, j * 5, cubeTextureRegion.getTexture(), tiles);
-        //placeBlock(Blocks.GRASS, new Coordinates(i * BLOCK_DISTANCE, 0, j * BLOCK_DISTANCE));
       }
     }
 
@@ -70,7 +64,7 @@ public class World {
       if (block.isVisible(camera))
         batch.render(block.getModel());
     }*/
-    batch.render(modelCache);
+    batch.render(modelCache, environment);
     //batch.render(instances, environment);
 
     /*var pickRay = camera.getPickRay(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);

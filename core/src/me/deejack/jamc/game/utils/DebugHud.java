@@ -17,7 +17,7 @@ public class DebugHud {
   private final ShapeRenderer shapeRenderer = new ShapeRenderer();
   private final SpriteBatch spriteBatch = new SpriteBatch();
   private final BitmapFont font = new BitmapFont();
-  private Map<Integer, TextToRender> textToRender = new HashMap<>();
+  private final Map<Integer, TextToRender> textToRender = new HashMap<>();
 
   private DebugHud() {
     if (INSTANCE != null)

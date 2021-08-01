@@ -1,14 +1,20 @@
 package me.deejack.jamc.input;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import me.deejack.jamc.JAMC;
 import me.deejack.jamc.game.UserInterface;
+import me.deejack.jamc.player.Player;
 
 public class UIInputProcessor implements InputProcessor {
-  private UserInterface ui;
+  private final UserInterface ui;
+  private final Player currentPlayer;
 
-  public UIInputProcessor(UserInterface userInterface) {
+  public UIInputProcessor(UserInterface userInterface, Player currentPlayer) {
     this.ui = userInterface;
+    this.currentPlayer = currentPlayer;
   }
 
   @Override
@@ -28,8 +34,16 @@ public class UIInputProcessor implements InputProcessor {
       case Keys.NUM_7:
       case Keys.NUM_8:
       case Keys.NUM_9:
-        ui.selectSlot(keyCode - 8);
+        currentPlayer.getInventory().setSelectedSlot(keyCode - 8 + 1);
         return true;
+      case Keys.F11:
+        if (Gdx.graphics.isFullscreen())
+          Gdx.graphics.setWindowedMode(1280, 720);
+        else Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        break;
+      case Keys.F12:
+        JAMC.DEBUG = false;
+        break;
     }
     return ui.isGamePaused();
   }
@@ -66,6 +80,8 @@ public class UIInputProcessor implements InputProcessor {
 
   @Override
   public boolean scrolled(float amountX, float amountY) {
+    System.out.println("X: " + amountX + ", Y: " + amountY);
+    currentPlayer.getInventory().setSelectedSlot(currentPlayer.getInventory().getSelectedSlot() + (int) amountY);
     return ui.isGamePaused();
   }
 

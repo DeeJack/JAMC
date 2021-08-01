@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.deejack.jamc.game.Hud;
@@ -13,12 +14,13 @@ import me.deejack.jamc.input.DebugInputProcessor;
 import me.deejack.jamc.input.GameInputProcessor;
 import me.deejack.jamc.input.PlayerMovementProcessor;
 import me.deejack.jamc.input.UIInputProcessor;
+import me.deejack.jamc.items.Items;
 import me.deejack.jamc.player.Player;
 import me.deejack.jamc.world.World;
 
 public class JAMC implements ApplicationListener {
   public final static float GAME_TIME_FACTOR = 2;
-  public final static boolean DEBUG = true;
+  public static boolean DEBUG = true;
   private PlayerMovementProcessor movementProcessor;
   private World world;
   private Player currentPlayer;
@@ -36,11 +38,25 @@ public class JAMC implements ApplicationListener {
     camera.update();
     currentPlayer = new Player(camera);
 
-    world = new World(); // Create the world
+    // TODO: move this sh*t
+    final int TEXTURE_SIZE = 16;
+    var textureAtlas = new TextureAtlas(Gdx.files.internal("models/minecraft.atlas"));
+    var cubeTextureRegion = textureAtlas.findRegion("minecraft");
+    cubeTextureRegion.setRegionX(2);
+    var fullTexture = cubeTextureRegion.getTexture();
+    var tiles = cubeTextureRegion.split(TEXTURE_SIZE, TEXTURE_SIZE);
+
+    // TODO: remove
+    currentPlayer.getInventory().addItem(Items.GRASS.createItem(tiles), 0);
+    currentPlayer.getInventory().addItem(Items.ASD.createItem(tiles), 1);
+    currentPlayer.getInventory().addItem(Items.STONE.createItem(tiles), 2);
+    currentPlayer.getInventory().addItem(Items.GRASS.createItem(tiles), 5);
+
+    world = new World(tiles, fullTexture); // Create the world
     world.create();
 
     hud = new Hud(); // Initialize the hud (crosshair, fps counter etc.)
-    hud.create();
+    hud.create(currentPlayer);
 
     Gdx.input.setCursorCatched(true); // Hide the cursor
     Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
@@ -55,7 +71,7 @@ public class JAMC implements ApplicationListener {
 
     // Add the input processors, first the UI, then the logic part (breaking/placing blocks), then the movement
     InputMultiplexer multipleInput = new InputMultiplexer();
-    var uiInputProcessor = new UIInputProcessor(new UserInterface(hud));
+    var uiInputProcessor = new UIInputProcessor(new UserInterface(hud), currentPlayer);
     movementProcessor = new PlayerMovementProcessor(currentPlayer, world);
 
     if (DEBUG)
@@ -91,7 +107,8 @@ public class JAMC implements ApplicationListener {
     var glCalls = profiler.getCalls();
     var vertexes = profiler.getVertexCount();
     var fps = Gdx.graphics.getFramesPerSecond();
-    System.out.println("Draw calls: " + drawCalls + ", textureBinds: " + textureBinds + ", fps: " + fps + ", shadersSwitches: " + shadersSwitches + ", glCalls: " + glCalls + ", vertexCount: " + vertexes.total);
+    if (DEBUG)
+      System.out.println("Draw calls: " + drawCalls + ", textureBinds: " + textureBinds + ", fps: " + fps + ", shadersSwitches: " + shadersSwitches + ", glCalls: " + glCalls + ", vertexCount: " + vertexes.total);
   }
 
   @Override

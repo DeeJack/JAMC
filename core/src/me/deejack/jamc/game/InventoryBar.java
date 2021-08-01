@@ -1,16 +1,25 @@
 package me.deejack.jamc.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
+import me.deejack.jamc.items.Item;
+import me.deejack.jamc.items.Items;
 import me.deejack.jamc.player.Inventory;
 
 public class InventoryBar {
-  private Inventory inventory;
-  private int selectedSlot = 0;
+  private final Inventory inventory;
+  private int selectedSlot = 1;
   private Array<Slot> slots;
+
+  public InventoryBar(Inventory inventory) {
+    this.inventory = inventory;
+  }
 
   public void create() {
     slots = new Array<>();
@@ -38,20 +47,28 @@ public class InventoryBar {
   }
 
   public void selectSlot(int slot) {
-    if (slot > 9 || slot < 0)
-      throw new AssertionError("Slot between 0 and 9");
+    if (slot > 9 || slot < 1)
+      throw new AssertionError("Slot between 1 and 9");
 
-    slots.get(selectedSlot).unselect();
+    slots.get(selectedSlot - 1).unselect();
     selectedSlot = slot;
-    slots.get(selectedSlot).select();
+    slots.get(selectedSlot - 1).select();
   }
 
   public void render(SpriteBatch hudBatch, float viewportWidth) {
     var slotSize = 40;
+    selectSlot(inventory.getSelectedSlot());
 
     final float startingX = (viewportWidth / 2) - (slots.size / 2 * slotSize);
     for (int i = 0; i < slots.size; ++i) {
-      hudBatch.draw(slots.get(i).getTexture(), startingX + (i * slotSize), 10);
+      var currentSlot = slots.get(i);
+      hudBatch.draw(currentSlot.getTexture(), startingX + (i * slotSize), 10);
+      if (inventory.getItem(i) != null) {
+        var paddingX = 3.3F;
+        var paddingY = 6;
+        var size = 35;
+        hudBatch.draw(inventory.getItem(i).getImage(), startingX + (i * slotSize) + paddingX, 10 + paddingY, size, size);
+      }
     }
   }
 

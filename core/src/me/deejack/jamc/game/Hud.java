@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import me.deejack.jamc.JAMC;
 import me.deejack.jamc.game.utils.DebugHud;
+import me.deejack.jamc.player.Player;
 
 public class Hud {
   private OrthographicCamera hudCamera;
@@ -18,14 +19,14 @@ public class Hud {
   private Texture crosshair;
   private InventoryBar inventoryBar;
 
-  public void create() {
+  public void create(Player currentPlayer) {
     hudCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     hudCamera.position.set(Gdx.graphics.getWidth() / 2.F, Gdx.graphics.getHeight() / 2.F, 1.F);
     batch = new SpriteBatch();
 
     font = new BitmapFont();
     createCrosshair();
-    inventoryBar = new InventoryBar();
+    inventoryBar = new InventoryBar(currentPlayer.getInventory());
     inventoryBar.create();
   }
 
@@ -48,11 +49,11 @@ public class Hud {
     batch.draw(crosshair, (hudCamera.viewportWidth / 2) - (crosshair.getWidth() / 2), (hudCamera.viewportHeight / 2) - (crosshair.getHeight() / 2));
     inventoryBar.render(batch, hudCamera.viewportWidth);
 
-    if (!JAMC.DEBUG)
-      return;
-    for (var text : DebugHud.INSTANCE.getTextToRender()) {
-      batch.setProjectionMatrix(hudCamera.combined);
-      font.draw(batch, text.text(), text.x(), text.y());
+    if (JAMC.DEBUG) {
+      for (var text : DebugHud.INSTANCE.getTextToRender()) {
+        batch.setProjectionMatrix(hudCamera.combined);
+        font.draw(batch, text.text(), text.x(), text.y());
+      }
     }
 
     batch.end();

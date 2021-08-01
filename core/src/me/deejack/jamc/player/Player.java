@@ -2,11 +2,13 @@ package me.deejack.jamc.player;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
+import me.deejack.jamc.entities.Entity;
 
-public class Player {
+public class Player implements Entity {
   private final Camera camera;
+  private final int movementSpeed = 2;
   private float cameraAngle = -30;
-  private int movementSpeed = 2;
+  private final Inventory inventory = new Inventory(40);
 
   public Player(Camera camera) {
     this.camera = camera;
@@ -32,5 +34,9 @@ public class Player {
       return;
     rotateCameraX(rotationAxis, angle);
     cameraAngle += angle;
+  }
+
+  public Inventory getInventory() {
+    return inventory;
   }
 }
