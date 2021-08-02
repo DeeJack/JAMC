@@ -17,7 +17,9 @@ import java.util.Map;
 public enum Blocks {
   STONE("Stone", 0, 1, 1, 1, 1, 1, 1),
   // STONE("Stone", 0, 1, 2, 3, 4, 5, 6);
-  ASD("asd", 2, 0, 1, 2, 3, 4, 5), GRASS("Grass", 1, 0, 2, 3, 3, 3, 3);
+  ASD("asd", 2, 0, 1, 2, 3, 4, 5),
+  GRASS("Grass", 1, 0, 2, 3, 3, 3, 3),
+  DIRT("Dirt", 3, 2, 2, 2, 2, 2, 2);
 
   private final static int TEXTURE_SIZE = 16;
   private final static Map<Blocks, Model> cache = new HashMap<>();
@@ -45,7 +47,8 @@ public enum Blocks {
 
   public Block createBlock(int x, int y, int z, Texture fullTexture, TextureRegion[][] tiles) {
     if (cache.containsKey(this)) {
-      return new Block(name, id, new Coordinates(x, y, z), cache.get(this));
+      return new Block(name, id, new Coordinates(x, y, z), cache.get(this),
+              tiles[0][topTextureId], tiles[0][bottomTextureId], tiles[0][leftTextureId], tiles[0][rightTextureId], tiles[0][frontTextureId], tiles[0][backTextureId]);
     }
     System.out.println("Creating model");
     int attributes = Usage.Position | Usage.Normal | Usage.TextureCoordinates;
@@ -74,6 +77,7 @@ public enum Blocks {
     var model = modelBuilder.end();
     cache.put(this, model);
 
-    return new Block(name, id, new Coordinates(x, y, z), model);
+    return new Block(name, id, new Coordinates(x, y, z), model,
+            tiles[0][topTextureId], tiles[0][bottomTextureId], tiles[0][leftTextureId], tiles[0][rightTextureId], tiles[0][frontTextureId], tiles[0][backTextureId]);
   }
 }

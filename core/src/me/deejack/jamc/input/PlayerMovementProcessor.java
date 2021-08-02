@@ -14,11 +14,9 @@ import java.util.HashSet;
 public class PlayerMovementProcessor implements InputProcessor {
   private final HashSet<Integer> pressedKey = new HashSet<>(); // Contains the currently pressed keys
   private final Player player;
-  private final World world; // TODO: remove after debug
 
-  public PlayerMovementProcessor(Player player, World world) {
+  public PlayerMovementProcessor(Player player) {
     this.player = player;
-    this.world = world;
   }
 
   @Override
@@ -128,12 +126,7 @@ public class PlayerMovementProcessor implements InputProcessor {
         case Keys.SPACE -> camera.translate(0, flightSpeed * gameDeltaTime, 0);
 
       }
-      for (var block : world.getBlocks())
-        block.unmark();
-      for (var block : world.getNearBlocks(player.getCamera().position)) {
-        block.mark();
-      }
     }
-    DebugHud.INSTANCE.displayText(1, "Position: " + camera.position, 10, 10);
+    DebugHud.INSTANCE.displayText(1, "Position: " + player.getPosition(), 10, 10);
   }
 }

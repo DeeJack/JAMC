@@ -39,4 +39,8 @@ public class Player implements Entity {
   public Inventory getInventory() {
     return inventory;
   }
+
+  public Vector3 getPosition() {
+    return camera.position.cpy().scl(1 / 3F);
+  }
 }

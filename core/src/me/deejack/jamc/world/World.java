@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import me.deejack.jamc.rendering.WorldRenderableProvider;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,6 +32,8 @@ public class World {
   private final TextureRegion[][] tiles;
   private final Texture fullTexture;
 
+  private WorldRenderableProvider testWorld;
+
   public World(TextureRegion[][] tiles, Texture fullTexture) {
     this.tiles = tiles;
     this.fullTexture = fullTexture;
@@ -46,15 +49,29 @@ public class World {
 
     modelCache = new ModelCache();
 
-    for (int i = 0; i < 50; ++i) {
-      for (int j = 0; j < 50; ++j) {
-        Block newBlock = Blocks.GRASS.createBlock(i * BLOCK_DISTANCE, 0, j * BLOCK_DISTANCE, fullTexture, tiles);
-        blocks.add(newBlock);
-        instances.add(newBlock.getModel());
+    for (int x = 0; x < 50; ++x) {
+      for (int z = 0; z < 50; ++z) {
+        for (int y = -10; y < 0; y++) {
+          Block newBlock = Blocks.GRASS.createBlock(x * BLOCK_DISTANCE, y * BLOCK_DISTANCE, z * BLOCK_DISTANCE, fullTexture, tiles);
+          blocks.add(newBlock);
+          instances.add(newBlock.getModel());
+        }
       }
     }
 
     updateCache();
+
+    testWorld = new WorldRenderableProvider(tiles, fullTexture, 1, 1);
+    var grass = Blocks.GRASS.createBlock(0, 0, 0, fullTexture, tiles);
+    var dirt = Blocks.DIRT.createBlock(0, 0, 0, fullTexture, tiles);
+    for (int x = 0; x < 3; x++) {
+      for (int y = 0; y < 7; y++) {
+        for (int z = 0; z < 3; z++) {
+          // TODO: WARNING: non sto tenendo conto che i blocchi devono essere distanziati di 4 unità, devo fare la trasformazione durante il rendering!
+          testWorld.placeBlock(x, y, z, y == 6 ? grass : dirt);
+        }
+      }
+    }
   }
 
   public void render(Camera camera) {
@@ -64,7 +81,10 @@ public class World {
       if (block.isVisible(camera))
         batch.render(block.getModel());
     }*/
-    batch.render(modelCache, environment);
+
+    batch.render(testWorld, environment);
+    //batch.render(modelCache, environment);
+
     //batch.render(instances, environment);
 
     /*var pickRay = camera.getPickRay(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);

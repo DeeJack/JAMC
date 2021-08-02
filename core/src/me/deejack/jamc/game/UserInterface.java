@@ -25,8 +25,4 @@ public class UserInterface {
   public boolean isGamePaused() {
     return paused;
   }
-
-  public void selectSlot(int slot) {
-    hud.selectInventoryBarSlot(slot);
-  }
 }

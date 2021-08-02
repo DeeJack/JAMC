@@ -16,6 +16,8 @@ import me.deejack.jamc.input.PlayerMovementProcessor;
 import me.deejack.jamc.input.UIInputProcessor;
 import me.deejack.jamc.items.Items;
 import me.deejack.jamc.player.Player;
+import me.deejack.jamc.rendering.WorldRenderableProvider;
+import me.deejack.jamc.world.Blocks;
 import me.deejack.jamc.world.World;
 
 public class JAMC implements ApplicationListener {
@@ -72,7 +74,7 @@ public class JAMC implements ApplicationListener {
     // Add the input processors, first the UI, then the logic part (breaking/placing blocks), then the movement
     InputMultiplexer multipleInput = new InputMultiplexer();
     var uiInputProcessor = new UIInputProcessor(new UserInterface(hud), currentPlayer);
-    movementProcessor = new PlayerMovementProcessor(currentPlayer, world);
+    movementProcessor = new PlayerMovementProcessor(currentPlayer);
 
     if (DEBUG)
       multipleInput.addProcessor(new DebugInputProcessor(hud.getCamera()));

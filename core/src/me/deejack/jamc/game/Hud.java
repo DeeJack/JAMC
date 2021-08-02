@@ -73,10 +73,6 @@ public class Hud {
     crosshair.dispose();
   }
 
-  public void selectInventoryBarSlot(int slot) {
-    inventoryBar.selectSlot(slot);
-  }
-
   public Camera getCamera() {
     return hudCamera;
   }
