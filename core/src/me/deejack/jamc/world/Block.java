@@ -14,7 +14,7 @@ public class Block implements Drawable {
   private final String name;
   private final int id;
   //private Texture texture;
-  private final Coordinates coordinates;
+  private final Vector3 coordinates;
   private final ModelInstance modelInstance;
   private final BoundingBox boundingBox = new BoundingBox();
   private boolean selected = false;
@@ -26,13 +26,15 @@ public class Block implements Drawable {
   private final TextureRegion frontTexture;
   private final TextureRegion backTexture;
 
-  public Block(String name, int id, Coordinates coordinates, Model model, TextureRegion topTexture, TextureRegion bottomTexture,
+  public Block(String name, int id, Vector3 coordinates, Model model, TextureRegion topTexture, TextureRegion bottomTexture,
                TextureRegion leftTexture, TextureRegion rightTexture, TextureRegion frontTexture, TextureRegion backTexture) {
     this.name = name;
     this.id = id;
     this.coordinates = coordinates;
     this.modelInstance = new ModelInstance(model);
-    modelInstance.transform.translate(coordinates.x(), coordinates.y(), coordinates.z());
+    System.out.println(modelInstance.transform);
+    modelInstance.transform.translate(coordinates.x * World.BLOCK_DISTANCE, coordinates.y * World.BLOCK_DISTANCE, coordinates.z * World.BLOCK_DISTANCE);
+    System.out.println(modelInstance.transform);
     modelInstance.calculateBoundingBox(boundingBox);
 
     this.topTexture = topTexture;
@@ -48,12 +50,12 @@ public class Block implements Drawable {
     return modelInstance;
   }
 
-  public Coordinates getCoordinates() {
+  public Vector3 getCoordinates() {
     return coordinates;
   }
 
   public float distanceFrom(float x, float y, float z) {
-    return new Vector3(coordinates.x(), coordinates.y(), coordinates.z()).dst(x, y, z);
+    return coordinates.cpy().dst(x, y, z);
   }
 
   public BoundingBox getBoundingBox() {

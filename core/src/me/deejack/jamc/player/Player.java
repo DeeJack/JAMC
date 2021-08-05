@@ -7,8 +7,8 @@ import me.deejack.jamc.entities.Entity;
 public class Player implements Entity {
   private final Camera camera;
   private final int movementSpeed = 2;
-  private float cameraAngle = -30;
   private final Inventory inventory = new Inventory(40);
+  private float cameraAngle = -30;
 
   public Player(Camera camera) {
     this.camera = camera;
@@ -42,5 +42,6 @@ public class Player implements Entity {
 
   public Vector3 getPosition() {
     return camera.position.cpy().scl(1 / 3F);
+    //return camera.position.cpy();
   }
 }

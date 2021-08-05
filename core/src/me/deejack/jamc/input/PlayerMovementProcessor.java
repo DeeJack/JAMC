@@ -127,6 +127,5 @@ public class PlayerMovementProcessor implements InputProcessor {
 
       }
     }
-    DebugHud.INSTANCE.displayText(1, "Position: " + player.getPosition(), 10, 10);
   }
 }

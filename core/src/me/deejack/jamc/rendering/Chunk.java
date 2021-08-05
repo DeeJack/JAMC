@@ -37,12 +37,6 @@ public class Chunk {
   private final Vector3 offset = new Vector3();
 
   /**
-   * The coordinates of the texture for the faces of the cube
-   */
-  public final Vector2[] textureCoordinates;
-  private int textureIndex = 0;
-
-  /**
    * The offset needed to get the another block with the index of a certain block in the blocks' array
    */
   private final int topOffset;
@@ -58,8 +52,7 @@ public class Chunk {
     this.depth = depth;
     this.vertexes = new Vector3[height * width * depth * VERTEXES_PER_FACE * CUBE_FACES];
     this.blocks = new Block[height * width * depth];
-    this.textureCoordinates = new Vector2[height * width * depth * VERTEXES_PER_FACE * CUBE_FACES];
-    this.offset.set(x, y, z);
+    this.offset.set(x * World.BLOCK_DISTANCE, y, z * World.BLOCK_DISTANCE);
 
     this.topOffset = width * depth; // The block on top of another block can be obtained adding width * depth (a full cicle)
     this.bottomOffset = -topOffset; // The bottom one is the opposite of the top offset
@@ -85,7 +78,7 @@ public class Chunk {
   }
 
   public Block get(int x, int y, int z) {
-    return blocks[x + z * width + y * depth * width];
+    return blocks[x + z * width + y * width * depth];
   }
 
   public int createTopFace(int x, int y, int z, int currentOffset, Block block) {
@@ -205,8 +198,6 @@ public class Chunk {
           if (blocks[currentBlockIndex] == null) // It's a block of air
             continue;
 
-          System.out.println(currentBlockIndex);
-
           if (y == height - 1 || blocks[currentBlockIndex + topOffset] == null) { // It's at the top of the chunk or the block on top of this block is air
             currentOffset = createTopFace(x * World.BLOCK_DISTANCE, y * World.BLOCK_DISTANCE, z * World.BLOCK_DISTANCE, currentOffset, blocks[currentBlockIndex]);
           }
@@ -234,21 +225,22 @@ public class Chunk {
       }
     }
     System.out.println("Current offset: " + currentOffset);
-    return currentOffset * 3; // 3 because 1 vector3 represent 3 floats
+    return currentOffset * 3 / 6; // 3 because 1 vector3 represent 3 floats
   }
 
   public float[] getVertexes() {
     float[] floatVertices = new float[vertexes.length * 3];
     int index = 0;
-    for (int i = 0; i < floatVertices.length; i += 3, index++) {
+    for (int i = 0; i < floatVertices.length && index < vertexes.length; i += 3, index++) {
       if (vertexes[index] == null)
-        break;
+        continue;
       floatVertices[i] = vertexes[index].x;
       floatVertices[i + 1] = vertexes[index].y;
       if (vertexes[index].z == Integer.MIN_VALUE) {
         i--;
       } else
         floatVertices[i + 2] = vertexes[index].z;
+      ;
     }
     return floatVertices;
   }

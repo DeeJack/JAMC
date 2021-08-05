@@ -8,14 +8,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import me.deejack.jamc.JAMC;
 import me.deejack.jamc.world.Block;
 
-import java.util.Arrays;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class WorldRenderableProvider implements RenderableProvider {
   private final static int CHUNK_SIZE_X = 16;
@@ -49,20 +50,29 @@ public class WorldRenderableProvider implements RenderableProvider {
   private final int[] numOfIndices;
   private int lastRenderedChunks = 0;
 
+  private final int chunksOnX;
+  private final int chunksOnZ;
+
+  private int chunkOffset = 0;
+
   /**
    * Create the world
    *
    * @param tiles     The textures to be used
-   * @param chunksOnX The number of chunks on the x-axis
-   * @param chunksOnZ The number of chunks on the z-axis
+   * @param chunks The number of chunks
    */
-  public WorldRenderableProvider(TextureRegion[][] tiles, Texture fullTexture, int chunksOnX, int chunksOnZ) {
-    this.chunks = new Chunk[chunksOnX * chunksOnZ];
+  public WorldRenderableProvider(TextureRegion[][] tiles, Texture fullTexture, int chunks) {
+    this.chunks = new Chunk[chunks];
+
+    if (chunks % 2 == 1)
+      throw new IllegalArgumentException("Chunk num odd");
+    this.chunksOnX = this.chunksOnZ = chunks / 2;
 
     int currentChunk = 0;
-    for (int x = 0; x < chunksOnX; x++) {
-      for (int z = 0; z < chunksOnZ; z++) {
-        chunks[currentChunk++] = new Chunk(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z, x * CHUNK_SIZE_X, 0, z * CHUNK_SIZE_Z);
+
+    for (int z = 0; z <  chunks / 2; z++) {
+      for (int x = 0; x < chunks / 2; x++) {
+        this.chunks[currentChunk++] = new Chunk(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z, x * CHUNK_SIZE_X, 0, z * CHUNK_SIZE_Z);
       }
     }
 
@@ -78,31 +88,50 @@ public class WorldRenderableProvider implements RenderableProvider {
       indices[i + 5] = (short) (currentOffset); // Top left corner
     }
 
-    this.meshes = new Mesh[chunksOnX * chunksOnZ];
+    this.meshes = new Mesh[chunks];
     for (int i = 0; i < meshes.length; i++) {
       meshes[i] = new Mesh(true, CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * Chunk.VERTEXES_PER_FACE * Chunk.CUBE_FACES, indices.length,
               VertexAttribute.Position(), VertexAttribute.Normal(), VertexAttribute.TexCoords(0));
       meshes[i].setIndices(indices);
     }
 
-    this.materials = new Material[chunksOnX * chunksOnZ];
+    this.materials = new Material[chunks];
     for (int chunk = 0; chunk < materials.length; chunk++) {
-      for (int block = 0; block < chunks[chunk].getBlocks().length; block++) {
+      for (int block = 0; block < this.chunks[chunk].getBlocks().length; block++) {
         materials[chunk] = new Material(new TextureAttribute(TextureAttribute.Diffuse, fullTexture));
       }
       /*materials[i] = new Material(new ColorAttribute(ColorAttribute.Diffuse, MathUtils.random(0.5f, 1f), MathUtils.random(
               0.5f, 1f), MathUtils.random(0.5f, 1f), 1));*/
     }
 
-    this.dirty = new boolean[chunksOnX * chunksOnZ];
+    this.dirty = new boolean[chunks];
     Arrays.fill(dirty, true);
 
-    this.numOfIndices = new int[chunksOnX * chunksOnZ];
+    this.numOfIndices = new int[chunks];
     Arrays.fill(numOfIndices, (short) 0);
   }
 
   public void placeBlock(int x, int y, int z, Block block) {
-    chunks[x / CHUNK_SIZE_X + z / CHUNK_SIZE_Z].set(x % CHUNK_SIZE_X, y, z % CHUNK_SIZE_Z, block);
+    int chunk = x / CHUNK_SIZE_X + z / CHUNK_SIZE_Z * (chunksOnX);
+    chunks[chunk].set(x % CHUNK_SIZE_X, y, z % CHUNK_SIZE_Z, block);
+    dirty[chunk] = true;
+  }
+
+  public void destroyBlock(int x, int y, int z) {
+    placeBlock(x, y, z, null);
+  }
+
+  public List<Block> getNearBlocks(Vector3 position) {
+    var chunk = chunks[((int) position.x / CHUNK_SIZE_X + (int) position.z / CHUNK_SIZE_Z * (chunksOnX))];
+    final int maxDistance = 15;
+    var nearBlocks = new ArrayList<>(Arrays.asList(chunk.getBlocks()));
+    //var nearBlocks = Arrays.asList(chunk.getBlocks());
+    //return nearBlocks.stream().filter(Objects::nonNull).collect(Collectors.toList());
+
+    return nearBlocks.stream().filter(Objects::nonNull)
+            .filter(block -> block.distanceFrom(position.x, position.y, position.z) < maxDistance)
+            .sorted(Comparator.comparingInt(block -> (int) block.distanceFrom(position.x, position.y, position.z)))
+            .collect(Collectors.toList());
   }
 
   @Override
@@ -130,6 +159,7 @@ public class WorldRenderableProvider implements RenderableProvider {
       lastRenderedChunks++;
     }
 
-    System.out.println("Render " + lastRenderedChunks + " chunks");
+    if (JAMC.DEBUG)
+      System.out.println("Render " + lastRenderedChunks + " chunks");
   }
 }

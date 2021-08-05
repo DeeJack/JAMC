@@ -4,13 +4,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
+import me.deejack.jamc.game.utils.DebugHud;
 import me.deejack.jamc.player.Player;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.Blocks;
 import me.deejack.jamc.world.Coordinates;
 import me.deejack.jamc.world.World;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class GameInputProcessor implements InputProcessor {
@@ -45,21 +49,57 @@ public class GameInputProcessor implements InputProcessor {
    * @return The block pointed by the camera, or {@link Optional#empty()}
    */
   private Optional<Block> findPickedBlock(Vector3 outIntersection) {
-    var position = player.getCamera().position;
-    var pickRay = player.getCamera().getPickRay(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+    var position = player.getPosition();
+    var asd = position.cpy();
+    //var pickRay = player.getCamera().getPickRay(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+    var blocksHit = new ArrayList<Block>();
+    var intersections = new ArrayList<Vector3>();
     for (var block : world.getNearBlocks(position)) {
-      var direction = pickRay.direction.scl(13);
-      pickRay.set(player.getCamera().position, direction);
+      var pickRay = player.getCamera().getPickRay(player.getCamera().viewportWidth / 2F, player.getCamera().viewportHeight / 2F);
+      var ray = new Ray(position.cpy(), pickRay.direction.cpy().setLength(1).nor().scl(1));
+      var ray2 = new Ray(pickRay.origin.cpy(), pickRay.direction.cpy().nor());
+      //var direction = pickRay.direction.scl(10).scl(-1, 1, -1);
+      //pickRay.set(player.getCamera().position, direction);
+      //System.out.println("Dir: "  + pickRay.direction);
+      //pickRay.set(position, pickRay.direction.cpy().scl(-1F, 1F, -1F));
+      //var end = new Vector3();
+      //pickRay.getEndPoint(end, 6);
+     // pickRay.set(player.getPosition(), player.getCamera().direction);
+      //System.out.println("Dir: " + ray.direction + ", origin: " + ray.origin);
 
       var boundingBox = block.getBoundingBox();
       block.getModel().calculateBoundingBox(boundingBox);
       boundingBox.mul(block.getModel().transform);
 
-      if (Intersector.intersectRayBounds(pickRay, boundingBox, outIntersection)) {
-        return Optional.of(block);
+      if (Intersector.intersectRayBounds(ray2, boundingBox, outIntersection)) {
+        //System.out.println("Ray: " + ray2 + "; bounding box: " + boundingBox);
+        //System.out.println("Coords: " + block.getCoordinates());
+        blocksHit.add(block);
+        intersections.add(outIntersection);
+        break;
+        //return Optional.of(block);
       }
     }
-    return Optional.empty();
+    Block firstBlock = blocksHit.size() == 0 ? null : blocksHit.get(0);
+    //float distance = 100;
+    //position = player.getPosition();
+    //for (int i = 0; i < blocksHit.size(); i++) {
+    //  var block = blocksHit.get(i);
+    //  if (block.distanceFrom(position.x, position.y, position.z) < distance) {
+    //    distance = block.distanceFrom(position.x, position.y, position.z);
+    //    firstBlock = block;
+   //     outIntersection.set(intersections.get(i));
+    //  }
+   // }
+    /*for (var block : blocksHit) {
+      if (block.distanceFrom(position.x, position.y, position.z) < distance) {
+        distance = block.distanceFrom(position.x, position.y, position.z);
+        firstBlock = block;
+        outIntersection.set(intersections.get(blocksHit.indexOf(block)));
+      }
+    }*/
+    //blocksHit.sort((first, second) -> (int) Math.min(first.distanceFrom(position.x, position.y, position.z), second.distanceFrom(position.x, position.y, position.z)));
+    return Optional.ofNullable(firstBlock);
   }
 
   /**
@@ -69,27 +109,30 @@ public class GameInputProcessor implements InputProcessor {
    * @param intersection The intersection point between the camera and the block
    * @return The coordinates in which the new block will be placed
    */
-  private Coordinates findNextFreeBlock(Block pointedBlock, Vector3 intersection) {
-    var pointedCoords = pointedBlock.getCoordinates();
-    System.out.println(pointedCoords + " - " + intersection);
-    if (pointedCoords.z() - 2 == intersection.z) { // Front
+  private Vector3 findNextFreeBlock(Block pointedBlock, Vector3 intersection) {
+    Vector3 pointedCoords = pointedBlock.getCoordinates().cpy();
+    Vector3 pointedCoords2 = pointedBlock.getCoordinates().cpy();
+    pointedCoords2.scl(World.BLOCK_DISTANCE);
+    System.out.println(pointedCoords2 + " - " + intersection);
+
+    if (pointedCoords2.z + World.BLOCK_DISTANCE == intersection.z) { // Front
       System.out.println("Front");
-      return new Coordinates(pointedCoords.x(), pointedCoords.y(), pointedCoords.z() - World.BLOCK_DISTANCE);
-    } else if (pointedCoords.z() + 2 == intersection.z) { // Back
+      return new Vector3(pointedCoords.x, pointedCoords.y, pointedCoords.z + 1);
+    } else if (pointedCoords2.z == intersection.z) { // Back
       System.out.println("Back");
-      return new Coordinates(pointedCoords.x(), pointedCoords.y(), pointedCoords.z() + World.BLOCK_DISTANCE);
-    } else if (pointedCoords.x() + 2 == intersection.x) { // left
+      return new Vector3(pointedCoords.x, pointedCoords.y, pointedCoords.z - 1);
+    } else if (pointedCoords2.x == intersection.x) { // left
       System.out.println("Left");
-      return new Coordinates(pointedCoords.x() + World.BLOCK_DISTANCE, pointedCoords.y(), pointedCoords.z());
-    } else if (pointedCoords.x() - 2 == intersection.x) { // right
+      return new Vector3(pointedCoords.x - 1, pointedCoords.y, pointedCoords.z);
+    } else if (pointedCoords2.x + World.BLOCK_DISTANCE == intersection.x) { // right
       System.out.println("Right");
-      return new Coordinates(pointedCoords.x() - World.BLOCK_DISTANCE, pointedCoords.y(), pointedCoords.z());
-    } else if (pointedCoords.y() - 2 == intersection.y) { // Bot
+      return new Vector3(pointedCoords.x + 1, pointedCoords.y, pointedCoords.z);
+    }else if (pointedCoords2.y == intersection.y) { // Bot
       System.out.println("Bot");
-      return new Coordinates(pointedCoords.x(), pointedCoords.y() - World.BLOCK_DISTANCE, pointedCoords.z());
+      return new Vector3(pointedCoords.x, pointedCoords.y - 1, pointedCoords.z);
     } else { // Top
       System.out.println("Top");
-      return new Coordinates(pointedCoords.x(), pointedCoords.y() + World.BLOCK_DISTANCE, pointedCoords.z());
+      return new Vector3(pointedCoords.x, pointedCoords.y + 1, pointedCoords.z);
     }
   }
 

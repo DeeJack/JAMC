@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.collision.Ray;
 import me.deejack.jamc.JAMC;
 import me.deejack.jamc.game.utils.DebugHud;
 import me.deejack.jamc.player.Player;
@@ -18,8 +19,11 @@ public class Hud {
   private SpriteBatch batch;
   private Texture crosshair;
   private InventoryBar inventoryBar;
+  private Player currentPlayer;
 
   public void create(Player currentPlayer) {
+    this.currentPlayer = currentPlayer;
+
     hudCamera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     hudCamera.position.set(Gdx.graphics.getWidth() / 2.F, Gdx.graphics.getHeight() / 2.F, 1.F);
     batch = new SpriteBatch();
@@ -49,12 +53,14 @@ public class Hud {
     batch.draw(crosshair, (hudCamera.viewportWidth / 2) - (crosshair.getWidth() / 2), (hudCamera.viewportHeight / 2) - (crosshair.getHeight() / 2));
     inventoryBar.render(batch, hudCamera.viewportWidth);
 
-    if (JAMC.DEBUG) {
+    //if (JAMC.DEBUG) {
       for (var text : DebugHud.INSTANCE.getTextToRender()) {
         batch.setProjectionMatrix(hudCamera.combined);
         font.draw(batch, text.text(), text.x(), text.y());
       }
-    }
+   // }
+
+    DebugHud.INSTANCE.displayText(1, "Position: " + currentPlayer.getPosition() + "/" + currentPlayer.getCamera().position, 10, 10);
 
     batch.end();
   }

@@ -6,10 +6,14 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.deejack.jamc.game.Hud;
 import me.deejack.jamc.game.UserInterface;
+import me.deejack.jamc.game.utils.DebugHud;
 import me.deejack.jamc.input.DebugInputProcessor;
 import me.deejack.jamc.input.GameInputProcessor;
 import me.deejack.jamc.input.PlayerMovementProcessor;
@@ -37,6 +41,8 @@ public class JAMC implements ApplicationListener {
     camera.lookAt(0f, 0f, 0f); // We look at the origin, where the object will be placed
     camera.near = 1f; // we set the near and far values
     camera.far = 300f;
+    camera.near = 0.5f;
+    camera.far = 1000f;
     camera.update();
     currentPlayer = new Player(camera);
 
@@ -65,8 +71,9 @@ public class JAMC implements ApplicationListener {
 
     // Face culling let openGL render only the faces the camera is seeing, not the
     // one behind!
-    Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
-    Gdx.gl20.glCullFace(GL20.GL_BACK);
+    //Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
+    //Gdx.gl20.glCullFace(GL20.GL_BACK);
+    Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
     // By changing the front face it's possible to see that it's actually working,
     // as only the back would be loaded using the code in the line after this
     // Gdx.gl20.glFrontFace(GL20.GL_CW);
@@ -99,6 +106,15 @@ public class JAMC implements ApplicationListener {
     ScreenUtils.clear(1, 0, 0, 1);
 
     world.render(currentPlayer.getCamera()); // render the world
+
+    var pickRay = currentPlayer.getCamera().getPickRay(currentPlayer.getCamera().viewportWidth / 2F, currentPlayer.getCamera().viewportHeight / 2F);
+    //var end = new Vector3();
+    //pickRay.getEndPoint(end, 6).add(0, 0, 1);
+   // var ray = new Ray(currentPlayer.getPosition().add(0, 0, 1), currentPlayer.getCamera().direction.cpy().add(0, 0, 1));
+    //DebugHud.INSTANCE.renderLine(currentPlayer.getCamera(), new DebugHud.Line(pickRay.origin, end));
+    DebugHud.INSTANCE.renderLine(currentPlayer.getCamera(), new DebugHud.Line(currentPlayer.getPosition().cpy().add(0, 0, 0.01F),
+            pickRay.origin.cpy().add(pickRay.direction.cpy().scl(15)).add(0, 0, 0.01F)));
+//DebugHud.INSTANCE.renderLine(currentPlayer.getCamera(), new DebugHud.Line(currentPlayer.getPosition().add(0, 0, 1), currentPlayer.getPosition().add(currentPlayer.getCamera().direction.cpy().add(0, 0, 1))));
 
     // Hud
     hud.render();
