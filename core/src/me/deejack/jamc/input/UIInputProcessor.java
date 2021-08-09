@@ -1,12 +1,11 @@
 package me.deejack.jamc.input;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import me.deejack.jamc.JAMC;
 import me.deejack.jamc.game.UserInterface;
-import me.deejack.jamc.player.Player;
+import me.deejack.jamc.entities.player.Player;
 
 public class UIInputProcessor implements InputProcessor {
   private final UserInterface ui;

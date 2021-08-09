@@ -5,18 +5,20 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
-import me.deejack.jamc.game.utils.DebugHud;
-import me.deejack.jamc.player.Player;
+import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.world.World;
 
 import java.util.HashSet;
+import java.util.Vector;
 
 public class PlayerMovementProcessor implements InputProcessor {
   private final HashSet<Integer> pressedKey = new HashSet<>(); // Contains the currently pressed keys
   private final Player player;
+  private final World world;
 
-  public PlayerMovementProcessor(Player player) {
+  public PlayerMovementProcessor(Player player, World world) {
     this.player = player;
+    this.world = world;
   }
 
   @Override
@@ -38,6 +40,7 @@ public class PlayerMovementProcessor implements InputProcessor {
       case Keys.C -> {
         camera.fieldOfView = 90;
       }
+      case Keys.F1 -> player.setFlying(!player.isFlying());
     }
     pressedKey.remove(keyCode);
     return true;
@@ -89,6 +92,8 @@ public class PlayerMovementProcessor implements InputProcessor {
     return false;
   }
 
+  // TODO: fly mode/walk mode
+
   /**
    * Called every frame, it moves the player based on the pressed keys (there is not "key_pressed" event
    *
@@ -104,27 +109,69 @@ public class PlayerMovementProcessor implements InputProcessor {
           var direction = camera.direction.cpy();
           var horizontal = direction.crs(camera.up);
           horizontal.scl(-movementSpeed * gameDeltaTime, 0F, -movementSpeed * gameDeltaTime);
-          camera.translate(direction);
+          var finalPosition = camera.position.cpy().add(horizontal).add(0, 0.5F, 0);
+          if (!world.checkCollision(finalPosition))
+            camera.translate(horizontal);
         }
         case Keys.D -> {
           var direction = camera.direction.cpy();
           var horizontal = direction.crs(camera.up);
           horizontal.scl(movementSpeed * gameDeltaTime, 0F, movementSpeed * gameDeltaTime);
-          camera.translate(direction);
+          var finalPosition = camera.position.cpy().add(horizontal).add(0, 0.5F, 0);
+          if (!world.checkCollision(finalPosition))
+            camera.translate(horizontal);
         }
         case Keys.W -> {
           var direction = camera.direction.cpy();
           direction.scl(movementSpeed * gameDeltaTime, 0, movementSpeed * gameDeltaTime);
-          camera.translate(direction);
+          var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
+          if (!world.checkCollision(finalPosition))
+            camera.translate(direction);
         }
         case Keys.S -> {
           var direction = camera.direction.cpy();
           direction.scl(-movementSpeed * gameDeltaTime, 0, -movementSpeed * gameDeltaTime);
-          camera.translate(direction);
+          var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
+          if (!world.checkCollision(finalPosition))
+            camera.translate(direction);
         }
-        case Keys.SHIFT_LEFT -> camera.translate(0, -flightSpeed * gameDeltaTime, 0);
-        case Keys.SPACE -> camera.translate(0, flightSpeed * gameDeltaTime, 0);
+        case Keys.SHIFT_LEFT -> {
+          var direction = new Vector3(0, -flightSpeed * gameDeltaTime, 0);
+          var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
+          System.out.println(finalPosition);
+          if (!world.checkCollision(finalPosition))
+            camera.translate(direction);
+        }
+        case Keys.SPACE -> {
+          Vector3 direction = new Vector3();
+          if (player.isFlying()) {
+            direction.set(0, flightSpeed * gameDeltaTime, 0);
+            var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
+            if (!world.checkCollision(finalPosition))
+              camera.translate(direction);
+          }
+          else {
+            if (!world.checkCollision(player)) // If it's not on the ground, stop
+              break;
 
+            direction.set(0, 5000 * gameDeltaTime, 0);
+            var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
+
+            // TODO: the jumping is terrible...
+            var jumping = new Thread(() -> {
+              while (camera.position.y < finalPosition.y) {
+                direction.clamp(0.5F, 2);
+                camera.translate(direction);
+                try {
+                  Thread.sleep(10);
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                }
+              }
+            });
+            jumping.start();
+          }
+        }
       }
     }
   }

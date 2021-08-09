@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import me.deejack.jamc.textures.TextureCache;
 import me.deejack.jamc.world.Coordinates;
 
 import java.util.HashMap;
@@ -37,7 +38,8 @@ public enum Items {
     this.category = category;
   }
 
-  public Item createItem(TextureRegion[][] tiles) {
+  public Item createItem() {
+    var tiles = TextureCache.getTiles();
     if (cache.containsKey(this)) {
       return new Item(name, id, cache.get(this));
     }

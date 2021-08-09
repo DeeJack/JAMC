@@ -1,10 +1,13 @@
 package me.deejack.jamc.rendering;
 
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.utils.Array;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represent a chunk of the world, it's used to optimize the rendering of the world, so that only the top, bottom and
@@ -35,6 +38,8 @@ public class Chunk {
    * The offset of the chunk compared to the world's coordinates
    */
   private final Vector3 offset = new Vector3();
+
+  private final List<Block> renderedBlocks = new ArrayList<>();
 
   /**
    * The offset needed to get the another block with the index of a certain block in the blocks' array
@@ -192,35 +197,46 @@ public class Chunk {
   public int calculateVertices() {
     int currentBlockIndex = 0;
     int currentOffset = 0;
+    renderedBlocks.clear();
     for (int y = 0; y < height; y++) {
       for (int z = 0; z < depth; z++) {
         for (int x = 0; x < width; x++, currentBlockIndex++) {
           if (blocks[currentBlockIndex] == null) // It's a block of air
             continue;
+          boolean rendered = false;
 
           if (y == height - 1 || blocks[currentBlockIndex + topOffset] == null) { // It's at the top of the chunk or the block on top of this block is air
             currentOffset = createTopFace(x * World.BLOCK_DISTANCE, y * World.BLOCK_DISTANCE, z * World.BLOCK_DISTANCE, currentOffset, blocks[currentBlockIndex]);
+            rendered = true;
           }
 
           if (y == 0 || blocks[currentBlockIndex + bottomOffset] == null) { // If it's the bottom block of the chunk or the block on the bottom of this block is air
             currentOffset = createBottomFace(x * World.BLOCK_DISTANCE, y * World.BLOCK_DISTANCE, z * World.BLOCK_DISTANCE, currentOffset, blocks[currentBlockIndex]);
+            rendered = true;
           }
 
           if (x == 0 || blocks[currentBlockIndex + leftOffset] == null) { // If it's the left-most block of the chunk or the block on the left of this block is air
             currentOffset = createLeftFace(x * World.BLOCK_DISTANCE, y * World.BLOCK_DISTANCE, z * World.BLOCK_DISTANCE, currentOffset, blocks[currentBlockIndex]);
+            rendered = true;
           }
 
           if (x == width - 1 || blocks[currentBlockIndex + rightOffset] == null) { // If it's the right-most block of the chunk or the block on the right of this block is air
             currentOffset = createRightFace(x * World.BLOCK_DISTANCE, y * World.BLOCK_DISTANCE, z * World.BLOCK_DISTANCE, currentOffset, blocks[currentBlockIndex]);
+            rendered = true;
           }
 
           if (z == 0 || blocks[currentBlockIndex + frontOffset] == null) { // If it's the block on the front of the chunk or the block on the front of this block is air
             currentOffset = createFrontFace(x * World.BLOCK_DISTANCE, y * World.BLOCK_DISTANCE, z * World.BLOCK_DISTANCE, currentOffset, blocks[currentBlockIndex]);
+            rendered = true;
           }
 
           if (z == depth - 1 || blocks[currentBlockIndex + backOffset] == null) { // If it's the block on the back of the chunk or the block on the front of this back is air
             currentOffset = createBackFace(x * World.BLOCK_DISTANCE, y * World.BLOCK_DISTANCE, z * World.BLOCK_DISTANCE, currentOffset, blocks[currentBlockIndex]);
+            rendered = true;
           }
+
+          if (rendered)
+            renderedBlocks.add(blocks[currentBlockIndex]);
         }
       }
     }
@@ -240,13 +256,16 @@ public class Chunk {
         i--;
       } else
         floatVertices[i + 2] = vertexes[index].z;
-      ;
     }
     return floatVertices;
   }
 
   public Block[] getBlocks() {
     return blocks;
+  }
+
+  public List<Block> getRenderedBlocks() {
+    return renderedBlocks;
   }
 
   public Vector3 getOffset() {

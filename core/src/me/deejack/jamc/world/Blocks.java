@@ -13,8 +13,10 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public enum Blocks {
   STONE("Stone", 0, 1, 1, 1, 1, 1, 1),
@@ -107,5 +109,9 @@ public enum Blocks {
 
     return new Block(name, id, new Vector3(x, y, z), model,
             tiles[0][topTextureId], tiles[0][bottomTextureId], tiles[0][leftTextureId], tiles[0][rightTextureId], tiles[0][frontTextureId], tiles[0][backTextureId]);
+  }
+
+  public static Optional<Blocks> fromId(int id) {
+    return Arrays.stream(Blocks.values()).filter(block -> block.id == id).findFirst();
   }
 }

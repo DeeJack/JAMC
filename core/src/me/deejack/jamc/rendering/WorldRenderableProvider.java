@@ -122,15 +122,17 @@ public class WorldRenderableProvider implements RenderableProvider {
   }
 
   public List<Block> getNearBlocks(Vector3 position) {
+    return getNearBlocks(position, 5);
+  }
+
+  public List<Block> getNearBlocks(Vector3 position, int distance) {
     var chunk = chunks[((int) position.x / CHUNK_SIZE_X + (int) position.z / CHUNK_SIZE_Z * (chunksOnX))];
-    final int maxDistance = 15;
-    var nearBlocks = new ArrayList<>(Arrays.asList(chunk.getBlocks()));
-    //var nearBlocks = Arrays.asList(chunk.getBlocks());
-    //return nearBlocks.stream().filter(Objects::nonNull).collect(Collectors.toList());
+    final int maxDistance = distance;
+    var nearBlocks = new ArrayList<>(chunk.getRenderedBlocks());
 
     return nearBlocks.stream().filter(Objects::nonNull)
             .filter(block -> block.distanceFrom(position.x, position.y, position.z) < maxDistance)
-            .sorted(Comparator.comparingInt(block -> (int) block.distanceFrom(position.x, position.y, position.z)))
+            .sorted(Comparator.comparingDouble(block -> block.distanceFrom(position.x, position.y, position.z)))
             .collect(Collectors.toList());
   }
 
@@ -161,5 +163,13 @@ public class WorldRenderableProvider implements RenderableProvider {
 
     if (JAMC.DEBUG)
       System.out.println("Render " + lastRenderedChunks + " chunks");
+  }
+
+  public Chunk[] getChunks() {
+    return chunks;
+  }
+
+  public Chunk getChunk(int x, int y, int z) {
+    return chunks[x / CHUNK_SIZE_X + z / CHUNK_SIZE_Z * (chunksOnX)];
   }
 }

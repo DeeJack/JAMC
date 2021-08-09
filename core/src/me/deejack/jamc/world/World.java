@@ -9,7 +9,12 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.utils.Array;
+import me.deejack.jamc.entities.Entity;
+import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.rendering.WorldRenderableProvider;
 
 import java.util.List;
@@ -18,14 +23,17 @@ public class World {
   public static final int BLOCK_DISTANCE = 4;
   private final TextureRegion[][] tiles;
   private final Texture fullTexture;
+  private final Player player;
+  private final Array<Entity> entities = new Array<>();
+  public boolean collision = false;
   private Environment environment;
   private ModelBatch batch;
-  //private Array<ModelInstance> instances;
-  //private List<Block> blocks;
-  //private ModelCache modelCache;
   private WorldRenderableProvider testWorld;
+  private int lastCollisionCheck = 0;
 
-  public World(TextureRegion[][] tiles, Texture fullTexture) {
+  public World(Player player, TextureRegion[][] tiles, Texture fullTexture) {
+    this.player = player;
+    entities.add(player);
     this.tiles = tiles;
     this.fullTexture = fullTexture;
   }
@@ -88,44 +96,89 @@ public class World {
     }
 
     var grass = Blocks.GRASS.createBlock(0, 0, 0, fullTexture, tiles);
-    //testWorld.placeBlock(0, 0, 0, grass);
+//testWorld.placeBlock(0, 0, 0, grass);
   }
 
-  public void render(Camera camera) {
+  public void render(Camera camera, float gameDeltaTime) {
     camera.update(); // Update the player's camera
-    batch.begin(camera);
-    /*for (var block : blocks) {
-      if (block.isVisible(camera))
-        batch.render(block.getModel());
-    }*/
 
-    batch.render(testWorld, environment);
-    //batch.render(modelCache, environment);
+    for (var entity : new Array.ArrayIterator<>(entities)) {
+      if (entity instanceof Player p && p.isFlying()) // If the entity is a player and he's flying
+        continue;
 
-    //batch.render(instances, environment);
+      if (!collision) // If it's not colliding with a block, make it fall  TODO: the collision must be with a block below the player!
+        entity.move(new Vector3(0, -10F * entity.getGravityCoefficient(), 0).scl(gameDeltaTime));
 
-    /*var pickRay = camera.getPickRay(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
-    var end = new Vector3();
-    pickRay.getEndPoint(end, 10).sub(0, 0, 2);
-    DebugHud.INSTANCE.renderLine(camera, new DebugHud.Line(pickRay.origin, end));*/
+      if (lastCollisionCheck >= 5) { // Check the collision every 5 frames
+        collision = checkCollision(entity);
+        lastCollisionCheck = 0;
+      }
+
+      if (entity.getPosition().y < -10) {
+        entity.setPosition(entity.getPosition().add(0, 100, 0));
+      }
+    }
+    lastCollisionCheck++;
+
+    batch.begin(camera); // Begin the drawing
+
+    batch.render(testWorld, environment); // Draw the visible chunks
+
+    batch.end(); // End the drawing
+  }
+
+  public boolean checkCollision(Vector3 position) {
+    var blocks = testWorld.getNearBlocks(position.cpy().scl(1 / 3F), 5); // Get the blocks in a range of 5 pixels (?)
+    System.out.println("Blocks n°: " + blocks.size() + ", position : " + position);
+
+    // Create the bounding box for the player and translate it to the current position of the player
+    var playerBounds = new BoundingBox();
+    playerBounds.set(new Vector3(-1.5F, -8, -1.5F), new Vector3(1.5F, 0, 1.5F));
+    playerBounds.mul(new Matrix4().setToTranslation(position));
 
 
-    batch.end();
+    for (var block : blocks) {
+      boolean result = playerBounds.intersects(block.getBoundingBox()); // Check if the player is colliding with a block
+
+      if (result)
+        return true;
+
+    }
+    return false;
+  }
+
+
+  public boolean checkCollision(Entity entity) {
+    return checkCollision(entity.getPosition().cpy().scl(3));
   }
 
   public void dispose() {
     batch.dispose();
   }
 
+  /**
+   * Place a block in the world
+   * @param block The type of the block
+   * @param coordinates The coordinates of the block (world coordinates)
+   */
   public void placeBlock(Blocks block, Vector3 coordinates) {
     Block newBlock = block.createBlock(coordinates.x, coordinates.y, coordinates.z, fullTexture, tiles);
     testWorld.placeBlock((int) coordinates.x, (int) coordinates.y, (int) coordinates.z, newBlock);
   }
 
+  /**
+   * Remove the block from the world (Only the coordinates in the block are important)
+   * @param block The block to remove
+   */
   public void destroyBlock(Block block) {
     testWorld.destroyBlock((int) block.getCoordinates().x, (int) block.getCoordinates().y, (int) block.getCoordinates().z);
   }
 
+  /**
+   * Get the blocks near a certain position
+   * @param position The position (in world's coordinates)
+   * @return The blocks near the position
+   */
   public List<Block> getNearBlocks(Vector3 position) {
     return testWorld.getNearBlocks(position);
   }

@@ -1,20 +1,15 @@
 package me.deejack.jamc.input;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import me.deejack.jamc.game.utils.DebugHud;
-import me.deejack.jamc.player.Player;
+import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.Blocks;
-import me.deejack.jamc.world.Coordinates;
 import me.deejack.jamc.world.World;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class GameInputProcessor implements InputProcessor {
@@ -50,13 +45,14 @@ public class GameInputProcessor implements InputProcessor {
    */
   private Optional<Block> findPickedBlock(Vector3 outIntersection) {
     var position = player.getPosition();
-    var asd = position.cpy();
+    //var asd = position.cpy();
     //var pickRay = player.getCamera().getPickRay(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
-    var blocksHit = new ArrayList<Block>();
-    var intersections = new ArrayList<Vector3>();
+    //var blocksHit = new ArrayList<Block>();
+    //var intersections = new ArrayList<Vector3>();
+    Block hitBlock = null;
     for (var block : world.getNearBlocks(position)) {
       var pickRay = player.getCamera().getPickRay(player.getCamera().viewportWidth / 2F, player.getCamera().viewportHeight / 2F);
-      var ray = new Ray(position.cpy(), pickRay.direction.cpy().setLength(1).nor().scl(1));
+      //var ray = new Ray(position.cpy(), pickRay.direction.cpy().setLength(1).nor().scl(1));
       var ray2 = new Ray(pickRay.origin.cpy(), pickRay.direction.cpy().nor());
       //var direction = pickRay.direction.scl(10).scl(-1, 1, -1);
       //pickRay.set(player.getCamera().position, direction);
@@ -74,13 +70,14 @@ public class GameInputProcessor implements InputProcessor {
       if (Intersector.intersectRayBounds(ray2, boundingBox, outIntersection)) {
         //System.out.println("Ray: " + ray2 + "; bounding box: " + boundingBox);
         //System.out.println("Coords: " + block.getCoordinates());
-        blocksHit.add(block);
-        intersections.add(outIntersection);
+        hitBlock = block;
+        //blocksHit.add(block);
+        //intersections.add(outIntersection);
         break;
         //return Optional.of(block);
       }
     }
-    Block firstBlock = blocksHit.size() == 0 ? null : blocksHit.get(0);
+    //Block firstBlock = blocksHit.size() == 0 ? null : blocksHit.get(0);
     //float distance = 100;
     //position = player.getPosition();
     //for (int i = 0; i < blocksHit.size(); i++) {
@@ -99,7 +96,7 @@ public class GameInputProcessor implements InputProcessor {
       }
     }*/
     //blocksHit.sort((first, second) -> (int) Math.min(first.distanceFrom(position.x, position.y, position.z), second.distanceFrom(position.x, position.y, position.z)));
-    return Optional.ofNullable(firstBlock);
+    return Optional.ofNullable(hitBlock);
   }
 
   /**
@@ -147,8 +144,11 @@ public class GameInputProcessor implements InputProcessor {
       if (block == null)
         return false;
       var nextCoords = findNextFreeBlock(block, intersection);
-      var newBlock = Blocks.GRASS;
-      world.placeBlock(newBlock, nextCoords);
+      var currentItem = player.getInventory().getSelectedItem();
+      if (currentItem != null) {
+        var newBlock = Blocks.fromId(currentItem.getId());
+        newBlock.ifPresent(type -> world.placeBlock(type, nextCoords));
+      }
     }
     return false;
   }

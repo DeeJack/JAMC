@@ -1,16 +1,11 @@
 package me.deejack.jamc.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
-import me.deejack.jamc.items.Item;
-import me.deejack.jamc.items.Items;
-import me.deejack.jamc.player.Inventory;
+import me.deejack.jamc.entities.player.Inventory;
 
 public class InventoryBar {
   private final Inventory inventory;

@@ -1,4 +1,4 @@
-package me.deejack.jamc.player;
+package me.deejack.jamc.entities.player;
 
 import me.deejack.jamc.items.Item;
 
@@ -36,5 +36,9 @@ public class Inventory {
 
   public int getSelectedSlot() {
     return selectedSlot;
+  }
+
+  public Item getSelectedItem() {
+    return getItem(getSelectedSlot() - 1);
   }
 }

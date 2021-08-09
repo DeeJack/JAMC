@@ -25,6 +25,7 @@ public class Block implements Drawable {
   private final TextureRegion rightTexture;
   private final TextureRegion frontTexture;
   private final TextureRegion backTexture;
+  private final Vector3 center = new Vector3();
 
   public Block(String name, int id, Vector3 coordinates, Model model, TextureRegion topTexture, TextureRegion bottomTexture,
                TextureRegion leftTexture, TextureRegion rightTexture, TextureRegion frontTexture, TextureRegion backTexture) {
@@ -36,6 +37,9 @@ public class Block implements Drawable {
     modelInstance.transform.translate(coordinates.x * World.BLOCK_DISTANCE, coordinates.y * World.BLOCK_DISTANCE, coordinates.z * World.BLOCK_DISTANCE);
     System.out.println(modelInstance.transform);
     modelInstance.calculateBoundingBox(boundingBox);
+    boundingBox.mul(modelInstance.transform);
+    boundingBox.getCenter(center);
+    center.scl(1 / 3F);
 
     this.topTexture = topTexture;
     this.bottomTexture = bottomTexture;
@@ -54,8 +58,12 @@ public class Block implements Drawable {
     return coordinates;
   }
 
+  /**
+   * The distance from the center of the block
+   * @return The distance from the center of the block
+   */
   public float distanceFrom(float x, float y, float z) {
-    return coordinates.cpy().dst(x, y, z);
+    return center.cpy().dst(x, y, z);
   }
 
   public BoundingBox getBoundingBox() {

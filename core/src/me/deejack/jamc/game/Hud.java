@@ -8,10 +8,8 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.collision.Ray;
-import me.deejack.jamc.JAMC;
 import me.deejack.jamc.game.utils.DebugHud;
-import me.deejack.jamc.player.Player;
+import me.deejack.jamc.entities.player.Player;
 
 public class Hud {
   private OrthographicCamera hudCamera;
