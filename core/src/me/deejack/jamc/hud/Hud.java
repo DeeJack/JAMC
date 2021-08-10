@@ -1,4 +1,4 @@
-package me.deejack.jamc.game;
+package me.deejack.jamc.hud;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import me.deejack.jamc.game.utils.DebugHud;
+import me.deejack.jamc.hud.utils.DebugHud;
 import me.deejack.jamc.entities.player.Player;
 
 public class Hud {
@@ -18,6 +18,11 @@ public class Hud {
   private Texture crosshair;
   private InventoryBar inventoryBar;
   private Player currentPlayer;
+  private final InventoryHud inventoryHud;
+
+  public Hud(InventoryHud inventoryHud) {
+    this.inventoryHud = inventoryHud;
+  }
 
   public void create(Player currentPlayer) {
     this.currentPlayer = currentPlayer;
@@ -50,6 +55,7 @@ public class Hud {
     font.draw(batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, hudCamera.viewportHeight);
     batch.draw(crosshair, (hudCamera.viewportWidth / 2) - (crosshair.getWidth() / 2), (hudCamera.viewportHeight / 2) - (crosshair.getHeight() / 2));
     inventoryBar.render(batch, hudCamera.viewportWidth);
+    inventoryHud.render(batch);
 
     //if (JAMC.DEBUG) {
       for (var text : DebugHud.INSTANCE.getTextToRender()) {
@@ -79,5 +85,9 @@ public class Hud {
 
   public Camera getCamera() {
     return hudCamera;
+  }
+
+  public InventoryHud getInventoryHud() {
+    return inventoryHud;
   }
 }

@@ -1,4 +1,4 @@
-package me.deejack.jamc.game.utils;
+package me.deejack.jamc.hud.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;

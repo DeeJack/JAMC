@@ -1,4 +1,4 @@
-package me.deejack.jamc.game;
+package me.deejack.jamc.hud;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -71,7 +71,7 @@ public class InventoryBar {
 
   }
 
-  private static class Slot {
+  public static class Slot {
     private final Texture texture;
     private final Pixmap initial;
     private final Pixmap selected;

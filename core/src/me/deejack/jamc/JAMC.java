@@ -6,12 +6,12 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.ScreenUtils;
-import me.deejack.jamc.game.Hud;
-import me.deejack.jamc.game.UserInterface;
-import me.deejack.jamc.game.utils.DebugHud;
+import me.deejack.jamc.hud.Hud;
+import me.deejack.jamc.hud.InventoryHud;
+import me.deejack.jamc.hud.UserInterface;
+import me.deejack.jamc.hud.utils.DebugHud;
 import me.deejack.jamc.input.DebugInputProcessor;
 import me.deejack.jamc.input.GameInputProcessor;
 import me.deejack.jamc.input.PlayerMovementProcessor;
@@ -53,7 +53,7 @@ public class JAMC implements ApplicationListener {
     world = new World(currentPlayer, TextureCache.getTiles(), TextureCache.getFullTexture()); // Create the world
     world.create();
 
-    hud = new Hud(); // Initialize the hud (crosshair, fps counter etc.)
+    hud = new Hud(new InventoryHud(currentPlayer.getInventory())); // Initialize the hud (crosshair, fps counter etc.)
     hud.create(currentPlayer);
 
     Gdx.input.setCursorCatched(true); // Hide the cursor

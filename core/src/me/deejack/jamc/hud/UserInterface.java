@@ -1,4 +1,4 @@
-package me.deejack.jamc.game;
+package me.deejack.jamc.hud;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
@@ -24,5 +24,17 @@ public class UserInterface {
 
   public boolean isGamePaused() {
     return paused;
+  }
+
+  public void toggleInventory() {
+    if (hud.getInventoryHud().isOpen())
+      hud.getInventoryHud().close();
+    else
+      hud.getInventoryHud().open();
+  }
+
+  public void updateCursorPosition(int x, int y) {
+    if (hud.getInventoryHud().isOpen())
+      hud.getInventoryHud().updateMouseCursor(x, y);
   }
 }

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
-import me.deejack.jamc.game.utils.DebugHud;
+import me.deejack.jamc.hud.utils.DebugHud;
 
 public class DebugInputProcessor implements InputProcessor {
   private boolean vsyncEnabled = false;

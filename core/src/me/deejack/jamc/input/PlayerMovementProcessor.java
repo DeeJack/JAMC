@@ -68,6 +68,8 @@ public class PlayerMovementProcessor implements InputProcessor {
 
   @Override
   public boolean mouseMoved(int screenX, int screenY) {
+    if (!Gdx.input.isCursorCatched())
+      return false;
     int width = Gdx.graphics.getWidth();
     int height = Gdx.graphics.getHeight();
     var camera = player.getCamera();
@@ -91,8 +93,6 @@ public class PlayerMovementProcessor implements InputProcessor {
   public boolean scrolled(float amountX, float amountY) {
     return false;
   }
-
-  // TODO: fly mode/walk mode
 
   /**
    * Called every frame, it moves the player based on the pressed keys (there is not "key_pressed" event

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import me.deejack.jamc.JAMC;
-import me.deejack.jamc.game.UserInterface;
+import me.deejack.jamc.hud.UserInterface;
 import me.deejack.jamc.entities.player.Player;
 
 public class UIInputProcessor implements InputProcessor {
@@ -43,6 +43,8 @@ public class UIInputProcessor implements InputProcessor {
       case Keys.F12:
         JAMC.DEBUG = false;
         break;
+      case Keys.E:
+        ui.toggleInventory();
     }
     return ui.isGamePaused();
   }
@@ -75,6 +77,7 @@ public class UIInputProcessor implements InputProcessor {
 
   @Override
   public boolean mouseMoved(int screenX, int screenY) {
+    ui.updateCursorPosition(screenX, screenY);
     return ui.isGamePaused();
   }
 
