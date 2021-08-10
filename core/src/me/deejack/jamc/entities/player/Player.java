@@ -1,21 +1,20 @@
 package me.deejack.jamc.entities.player;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btCompoundShape;
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.physics.bullet.linearmath.btDefaultMotionState;
 import me.deejack.jamc.entities.Entity;
+import me.deejack.jamc.world.World;
 
 public class Player implements Entity {
+  public static final float WALKING_VELOCITY = 5;
+  public static final float RUNNING_VELOCITY = 5;
+
   private final Camera camera;
   private final int movementSpeed = 2;
   private final Inventory inventory = new Inventory(40);
   private float cameraAngle = -0;
   private boolean flying = false;
+  private float velocity = WALKING_VELOCITY;
 
   public Player(Camera camera) {
     this.camera = camera;
@@ -49,7 +48,7 @@ public class Player implements Entity {
   }
 
   public Vector3 getPosition() {
-    return camera.position.cpy().scl(1 / 3F);
+    return camera.position.cpy().scl(1 / (float) World.BLOCK_DISTANCE);
     //return camera.position.cpy();
   }
 
@@ -59,15 +58,25 @@ public class Player implements Entity {
   }
 
   @Override
+  public float getVelocity() {
+    return velocity;
+  }
+
+  @Override
+  public void setVelocity(float velocity) {
+    this.velocity = velocity;
+  }
+
+  @Override
   public float getGravityCoefficient() {
     return 2;
   }
 
-  public void setFlying(boolean flying) {
-    this.flying = flying;
-  }
-
   public boolean isFlying() {
     return flying;
+  }
+
+  public void setFlying(boolean flying) {
+    this.flying = flying;
   }
 }

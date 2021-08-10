@@ -11,4 +11,8 @@ public interface Entity {
   Vector3 getPosition();
 
   void setPosition(Vector3 add);
+
+  float getVelocity();
+
+  void setVelocity(float velocity);
 }

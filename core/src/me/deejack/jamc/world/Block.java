@@ -33,13 +33,11 @@ public class Block implements Drawable {
     this.id = id;
     this.coordinates = coordinates;
     this.modelInstance = new ModelInstance(model);
-    System.out.println(modelInstance.transform);
     modelInstance.transform.translate(coordinates.x * World.BLOCK_DISTANCE, coordinates.y * World.BLOCK_DISTANCE, coordinates.z * World.BLOCK_DISTANCE);
-    System.out.println(modelInstance.transform);
-    modelInstance.calculateBoundingBox(boundingBox);
+    modelInstance.calculateBoundingBox(boundingBox); // TODO: static bounding box
     boundingBox.mul(modelInstance.transform);
     boundingBox.getCenter(center);
-    center.scl(1 / 3F);
+    center.scl(1 / (float) World.BLOCK_DISTANCE);
 
     this.topTexture = topTexture;
     this.bottomTexture = bottomTexture;

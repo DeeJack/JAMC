@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
+import me.deejack.jamc.JAMC;
 import me.deejack.jamc.entities.Entity;
 import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.rendering.WorldRenderableProvider;
@@ -70,6 +71,7 @@ public class World {
         }
       }
     }
+
     for (int x = 16; x < 32; x++) {
       for (int y = 0; y < 7; y++) {
         for (int z = 16; z < 32; z++) {
@@ -86,7 +88,7 @@ public class World {
         }
       }
     }
-    for (int x = 0; x < 16D; x++) {
+    for (int x = 0; x < 16; x++) {
       for (int y = 0; y < 7; y++) {
         for (int z = 16; z < 32; z++) {
           var grass = Blocks.OAK_WOOD_PLANK.createBlock(x, y, z, fullTexture, tiles);
@@ -128,12 +130,14 @@ public class World {
   }
 
   public boolean checkCollision(Vector3 position) {
-    var blocks = testWorld.getNearBlocks(position.cpy().scl(1 / 3F), 5); // Get the blocks in a range of 5 pixels (?)
-    System.out.println("Blocks n°: " + blocks.size() + ", position : " + position);
+    //var blocks = testWorld.getNearBlocks(position.cpy().scl(1 / 3F), 5); // Get the blocks in a range of 5 pixels (?)
+    var blocks = testWorld.getNearBlocks(position.cpy().scl(1 / (float) World.BLOCK_DISTANCE), 5); // Get the blocks in a range of 5 pixels (?)
+    if (JAMC.DEBUG)
+      System.out.println("Blocks n°: " + blocks.size() + ", position : " + position);
 
     // Create the bounding box for the player and translate it to the current position of the player
     var playerBounds = new BoundingBox();
-    playerBounds.set(new Vector3(-1.5F, -8, -1.5F), new Vector3(1.5F, 0, 1.5F));
+    playerBounds.set(new Vector3(-1.5F, -8, -1.5F), new Vector3(1.5F, 0, 1.5F)); // TODO: do this only one time on the creation of the player!
     playerBounds.mul(new Matrix4().setToTranslation(position));
 
 
@@ -149,7 +153,7 @@ public class World {
 
 
   public boolean checkCollision(Entity entity) {
-    return checkCollision(entity.getPosition().cpy().scl(3));
+    return checkCollision(entity.getPosition().scl(World.BLOCK_DISTANCE));
   }
 
   public void dispose() {

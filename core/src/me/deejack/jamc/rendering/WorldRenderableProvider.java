@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -113,6 +114,8 @@ public class WorldRenderableProvider implements RenderableProvider {
 
   public void placeBlock(int x, int y, int z, Block block) {
     int chunk = x / CHUNK_SIZE_X + z / CHUNK_SIZE_Z * (chunksOnX);
+    if (chunk != 0)
+      System.out.println("Chunk: " + chunk);
     chunks[chunk].set(x % CHUNK_SIZE_X, y, z % CHUNK_SIZE_Z, block);
     dirty[chunk] = true;
   }
@@ -126,7 +129,10 @@ public class WorldRenderableProvider implements RenderableProvider {
   }
 
   public List<Block> getNearBlocks(Vector3 position, int distance) {
-    var chunk = chunks[((int) position.x / CHUNK_SIZE_X + (int) position.z / CHUNK_SIZE_Z * (chunksOnX))];
+    int chunkIndex = (MathUtils.floor(position.x) / CHUNK_SIZE_X) + (MathUtils.floor(position.z) / CHUNK_SIZE_Z * chunksOnX);
+    if (chunkIndex != 0)
+      System.out.println("Current chunk: " + chunkIndex);
+    var chunk = chunks[chunkIndex];
     final int maxDistance = distance;
     var nearBlocks = new ArrayList<>(chunk.getRenderedBlocks());
 
