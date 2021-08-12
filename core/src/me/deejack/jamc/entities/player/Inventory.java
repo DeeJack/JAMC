@@ -20,6 +20,7 @@ public class Inventory {
     return items[slot];
   }
 
+  // TODO: selectedSlot goes from 1 to 9 but 'addItem' takes the index from 0
   public void addItem(Item item, int slot) {
     if (slot > items.length || slot < 0)
       throw new IllegalArgumentException("Slots out of bounds: " + slot + "/" + items.length);
@@ -40,5 +41,20 @@ public class Inventory {
 
   public Item getSelectedItem() {
     return getItem(getSelectedSlot() - 1);
+  }
+
+  public void addItem(Item item) {
+    for (var slot : items) {
+      if (slot != null && slot.getId() == item.getId()) {
+        slot.setQuantity(slot.getQuantity() + 1);
+        return;
+      }
+    }
+    for (int i = 0; i < items.length; i++) {
+      if (items[i] == null) {
+        items[i] = item;
+        return;
+      }
+    }
   }
 }

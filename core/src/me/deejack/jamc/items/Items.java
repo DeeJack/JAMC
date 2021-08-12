@@ -35,4 +35,8 @@ public enum Items {
     cache.put(this, tiles[0][textureId]);
     return new Item(name, id, tiles[0][textureId]);
   }
+
+  public int getId() {
+    return id;
+  }
 }

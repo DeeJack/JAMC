@@ -116,4 +116,8 @@ public class Block implements Drawable {
   public TextureRegion getBackTexture() {
     return backTexture;
   }
+
+  public int getId() {
+    return id;
+  }
 }

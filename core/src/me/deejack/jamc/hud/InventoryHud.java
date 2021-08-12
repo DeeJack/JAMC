@@ -1,6 +1,7 @@
 package me.deejack.jamc.hud;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import me.deejack.jamc.entities.player.Inventory;
+import me.deejack.jamc.hud.utils.HoverPopup;
 import me.deejack.jamc.items.Item;
 
 public class InventoryHud {
@@ -25,6 +27,7 @@ public class InventoryHud {
   private Item pickedItem; // The item the player picked with the mouse
   private int mouseX = 0;
   private int mouseY = 0;
+  private HoverPopup currentItemPopup;
 
   public InventoryHud(Inventory inventory) {
     this.inventory = inventory;
@@ -75,7 +78,7 @@ public class InventoryHud {
           var paddingY = 6F;
           var size = SLOT_SIZE - 10;
           hudBatch.draw(inventory.getItem(index).getImage(), startingPosition.x + (slotIndex * SLOT_SIZE) + paddingX, startingPosition.y + paddingY + (rows * SLOT_SIZE) + inventoryBarPadding, size, size);
-          font.draw(hudBatch, inventory.getItem(index).getQuantity() + "", startingPosition.x + (slotIndex * SLOT_SIZE) + paddingX + size - 5, startingPosition.y + paddingY + (rows * SLOT_SIZE) + inventoryBarPadding + 10);
+          font.draw(hudBatch, inventory.getItem(index).getQuantity() + "", startingPosition.x + (slotIndex * SLOT_SIZE) + paddingX + size - 10, startingPosition.y + paddingY + (rows * SLOT_SIZE) + inventoryBarPadding + 15);
         }
       }
     }
@@ -83,9 +86,13 @@ public class InventoryHud {
     if (pickedItem != null) {
       hudBatch.draw(pickedItem.getImage(), mouseX, mouseY);
     }
+
+    if (currentItemPopup != null) {
+      currentItemPopup.render(hudBatch, mouseX, mouseY);
+    }
   }
 
-  private int getSlotIndex(int x, int y) {
+  private int getSlotIndex(int x, int y) { // TODO: I'm not keeping track of the padding? and most importantly is the padding between the inventorybar and the rest of the inventory
     if (previousSelectedSlot != null)
       previousSelectedSlot.unselect();
 
@@ -109,11 +116,17 @@ public class InventoryHud {
     mouseY = Gdx.graphics.getHeight() - y;
     var slotIndex = getSlotIndex(x, y);
 
-    if (slotIndex >= slots.length || slotIndex < 0)
+    if (slotIndex >= slots.length || slotIndex < 0) {
+      currentItemPopup = null;
       return;
+    }
 
     var selectedSlot = slots[slotIndex];
-
+    var selectedItem = inventory.getItem(slotIndex);
+    if (selectedItem != null) {
+      currentItemPopup = new HoverPopup(selectedItem.getName());
+    } else
+      currentItemPopup = null;
     selectedSlot.select();
     previousSelectedSlot = selectedSlot;
   }
@@ -154,6 +167,9 @@ public class InventoryHud {
       }
       return;
     }
+
+    if (newItem != null && Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+      newItem.setQuantity(64);
 
     pickedItem = newItem;
     inventory.addItem(null, slotIndex);

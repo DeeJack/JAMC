@@ -35,7 +35,7 @@ public class JAMC implements ApplicationListener {
     Bullet.init();
 
     var camera = new PerspectiveCamera(90, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // Set the width, height and a FOV of 70
-    camera.position.set(10f, 60f, 10f); // we set the position 10 pixels to the right, 10 up and 10 to the back (z
+    camera.position.set(10f, 65f, 10f); // we set the position 10 pixels to the right, 10 up and 10 to the back (z
     // is positive towards the viewer)
     //camera.lookAt(0f, 0f, 0f); // We look at the origin, where the object will be placed
     camera.near = 1f; // we set the near and far values
@@ -49,6 +49,11 @@ public class JAMC implements ApplicationListener {
     currentPlayer.getInventory().addItem(Items.ASD.createItem(), 1);
     currentPlayer.getInventory().addItem(Items.STONE.createItem(), 2);
     currentPlayer.getInventory().addItem(Items.GRASS.createItem(), 5);
+
+    var index = currentPlayer.getInventory().getSlots() - 1;
+    for (var itemType : Items.values()) {
+      currentPlayer.getInventory().addItem(itemType.createItem(), index--);
+    }
 
     world = new World(currentPlayer, TextureCache.getTiles(), TextureCache.getFullTexture()); // Create the world
     world.create();

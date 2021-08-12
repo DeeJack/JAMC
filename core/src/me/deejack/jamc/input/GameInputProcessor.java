@@ -6,10 +6,12 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.items.Items;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.Blocks;
 import me.deejack.jamc.world.World;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class GameInputProcessor implements InputProcessor {
@@ -138,6 +140,10 @@ public class GameInputProcessor implements InputProcessor {
     if (button == Input.Buttons.LEFT) {
       var block = findPickedBlock(new Vector3());
       block.ifPresent(world::destroyBlock);
+      block.ifPresent(pickedBlock -> {
+        var itemType = Arrays.stream(Items.values()).filter(item -> item.getId() == pickedBlock.getId()).findFirst();
+        itemType.ifPresent(item -> player.getInventory().addItem(item.createItem()));
+      });
     } else if (button == Input.Buttons.RIGHT) {
       Vector3 intersection = new Vector3();
       var block = findPickedBlock(intersection).orElse(null);
@@ -151,8 +157,22 @@ public class GameInputProcessor implements InputProcessor {
       var currentItem = player.getInventory().getSelectedItem();
       if (currentItem != null) {
         var newBlock = Blocks.fromId(currentItem.getId());
+        if (currentItem.getQuantity() == 1)
+          player.getInventory().addItem(null, player.getInventory().getSelectedSlot() - 1);
+        currentItem.setQuantity(currentItem.getQuantity() - 1);
         newBlock.ifPresent(type -> world.placeBlock(type, nextCoords));
       }
+    } else if (button == Input.Buttons.MIDDLE) { // Middle click
+      Vector3 intersection = new Vector3();
+      var block = findPickedBlock(intersection).orElse(null);
+      if (block == null)
+        return false;
+      var selectedItem = player.getInventory().getSelectedItem();
+      if (selectedItem != null) // If the player has something in his hand stop
+        return false;
+      var selectedSlot = player.getInventory().getSelectedSlot();
+      var itemType = Arrays.stream(Items.values()).filter(item -> item.getId() == block.getId()).findFirst();
+      itemType.ifPresent(items -> player.getInventory().addItem(items.createItem(), selectedSlot - 1));
     }
     return false;
   }
