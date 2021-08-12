@@ -7,6 +7,7 @@ import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.World;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -240,7 +241,9 @@ public class Chunk {
         }
       }
     }
-    System.out.println("Current offset: " + currentOffset);
+    vertexes[currentOffset + 1] = null;
+    //Arrays.fill(vertexes, currentOffset, currentOffset + 1, null);
+    //System.out.println("Current offset: " + currentOffset);
     return currentOffset * 3 / 6; // 3 because 1 vector3 represent 3 floats
   }
 
@@ -249,10 +252,10 @@ public class Chunk {
     int index = 0;
     for (int i = 0; i < floatVertices.length && index < vertexes.length; i += 3, index++) {
       if (vertexes[index] == null)
-        continue;
+        break;
       floatVertices[i] = vertexes[index].x;
       floatVertices[i + 1] = vertexes[index].y;
-      if (vertexes[index].z == Integer.MIN_VALUE) {
+      if (vertexes[index].z == Integer.MIN_VALUE) { // It's Integer.MIN_VALUE only for the texture, which only needs a Vector2
         i--;
       } else
         floatVertices[i + 2] = vertexes[index].z;

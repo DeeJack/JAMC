@@ -62,9 +62,10 @@ public class World {
     }*/
 
     testWorld = new WorldRenderableProvider(tiles, fullTexture, 4);
-    for (int x = 0; x < 15; x++) {
+    // TODO: fill chunk method
+    for (int x = 0; x < 16; x++) {
       for (int y = 0; y < 7; y++) {
-        for (int z = 0; z < 15; z++) {
+        for (int z = 0; z < 16; z++) {
           var grass = Blocks.GRASS.createBlock(x, y, z, fullTexture, tiles);
           var dirt = Blocks.DIRT.createBlock(x, y, z, fullTexture, tiles);
           testWorld.placeBlock(x, y, z, y == 6 ? grass : dirt);
@@ -105,7 +106,7 @@ public class World {
     camera.update(); // Update the player's camera
 
     for (var entity : new Array.ArrayIterator<>(entities)) {
-      if (entity instanceof Player p && p.isFlying()) // If the entity is a player and he's flying
+      if (entity instanceof Player p && (p.isFlying() || p.isJumping())) // If the entity is a player and he's flying
         continue;
 
       if (!collision) // If it's not colliding with a block, make it fall  TODO: the collision must be with a block below the player!

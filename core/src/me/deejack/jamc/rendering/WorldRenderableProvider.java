@@ -129,9 +129,12 @@ public class WorldRenderableProvider implements RenderableProvider {
   }
 
   public List<Block> getNearBlocks(Vector3 position, int distance) {
+    // TODO: multiple chunks if the player is in between various chunks! Add the adiacent chunks!
     int chunkIndex = (MathUtils.floor(position.x) / CHUNK_SIZE_X) + (MathUtils.floor(position.z) / CHUNK_SIZE_Z * chunksOnX);
     if (chunkIndex != 0)
       System.out.println("Current chunk: " + chunkIndex);
+    if (chunkIndex < 0 || chunkIndex >= chunks.length)
+      return new ArrayList<>();
     var chunk = chunks[chunkIndex];
     final int maxDistance = distance;
     var nearBlocks = new ArrayList<>(chunk.getRenderedBlocks());
