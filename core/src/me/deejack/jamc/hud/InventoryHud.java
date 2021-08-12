@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import me.deejack.jamc.entities.player.Inventory;
+import me.deejack.jamc.items.Item;
 
 public class InventoryHud {
   private final static int ITEMS_PER_ROW = 8;
@@ -17,8 +19,12 @@ public class InventoryHud {
   private final InventoryBar.Slot[] slots = new InventoryBar.Slot[40];
   private final Vector2 startingPosition = new Vector2(100, 100);
   private final Texture inventoryBackground;
+  private final BitmapFont font = new BitmapFont();
   private boolean open = false;
   private InventoryBar.Slot previousSelectedSlot = null;
+  private Item pickedItem; // The item the player picked with the mouse
+  private int mouseX = 0;
+  private int mouseY = 0;
 
   public InventoryHud(Inventory inventory) {
     this.inventory = inventory;
@@ -69,12 +75,17 @@ public class InventoryHud {
           var paddingY = 6F;
           var size = SLOT_SIZE - 10;
           hudBatch.draw(inventory.getItem(index).getImage(), startingPosition.x + (slotIndex * SLOT_SIZE) + paddingX, startingPosition.y + paddingY + (rows * SLOT_SIZE) + inventoryBarPadding, size, size);
+          font.draw(hudBatch, inventory.getItem(index).getQuantity() + "", startingPosition.x + (slotIndex * SLOT_SIZE) + paddingX + size - 5, startingPosition.y + paddingY + (rows * SLOT_SIZE) + inventoryBarPadding + 10);
         }
       }
     }
+
+    if (pickedItem != null) {
+      hudBatch.draw(pickedItem.getImage(), mouseX, mouseY);
+    }
   }
 
-  public void updateMouseCursor(int x, int y) {
+  private int getSlotIndex(int x, int y) {
     if (previousSelectedSlot != null)
       previousSelectedSlot.unselect();
 
@@ -82,7 +93,7 @@ public class InventoryHud {
     y -= startingPosition.y;
     var NUM_OF_ROWS = slots.length / ITEMS_PER_ROW;
     if (x < 0 || y < 0 || x > (SLOT_SIZE * ITEMS_PER_ROW) || y > (SLOT_SIZE * NUM_OF_ROWS))
-      return;
+      return -1;
 
     y = y / SLOT_SIZE;
 
@@ -90,11 +101,19 @@ public class InventoryHud {
     System.out.println("X: " + (x / SLOT_SIZE) + ", Y: " + y);
     //int slotIndex = slots.length - 1 - ((x / SLOT_SIZE) + (y / SLOT_SIZE));
     int slotIndex = (x / SLOT_SIZE) + (y * ITEMS_PER_ROW);
+    return slotIndex;
+  }
 
-    if (slotIndex > slots.length || slotIndex < 0)
+  public void updateMouseCursor(int x, int y) {
+    mouseX = x;
+    mouseY = Gdx.graphics.getHeight() - y;
+    var slotIndex = getSlotIndex(x, y);
+
+    if (slotIndex >= slots.length || slotIndex < 0)
       return;
 
     var selectedSlot = slots[slotIndex];
+
     selectedSlot.select();
     previousSelectedSlot = selectedSlot;
   }
@@ -107,5 +126,36 @@ public class InventoryHud {
     var width = (newWidth / 2) - (ITEMS_PER_ROW * (SLOT_SIZE / 2));
     var height = (newHeight / 2) - ((slots.length / ITEMS_PER_ROW) * (SLOT_SIZE / 2));
     startingPosition.set(width, height);
+  }
+
+  public void onMousePressed(int x, int y) {
+    var slotIndex = getSlotIndex(x, y);
+
+    if (slotIndex >= slots.length || slotIndex < 0) { // Outside the inventory
+      pickedItem = null;
+      return;
+    }
+
+    var newItem = inventory.getItem(slotIndex);
+
+    if (newItem == null && pickedItem != null) { // The slot is empty and you have an item in hand
+      inventory.addItem(pickedItem, slotIndex);
+      pickedItem = null; // Remove the item from the hand
+      return;
+    }
+
+    if (newItem != null && pickedItem != null) {
+      if (newItem.getId() == pickedItem.getId()) { // If the item in hand is the same item as that of the selected slot
+        newItem.setQuantity(newItem.getQuantity() + pickedItem.getQuantity());
+        pickedItem = null; // Remove the item from the hand
+      } else { // If the items are different, swap them
+        inventory.addItem(pickedItem, slotIndex);
+        pickedItem = newItem;
+      }
+      return;
+    }
+
+    pickedItem = newItem;
+    inventory.addItem(null, slotIndex);
   }
 }

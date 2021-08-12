@@ -26,6 +26,10 @@ public class UserInterface {
     return paused;
   }
 
+  public boolean isInventoryOpen() {
+    return hud.getInventoryHud().isOpen();
+  }
+
   public void toggleInventory() {
     if (hud.getInventoryHud().isOpen())
       hud.getInventoryHud().close();
@@ -36,5 +40,10 @@ public class UserInterface {
   public void updateCursorPosition(int x, int y) {
     if (hud.getInventoryHud().isOpen())
       hud.getInventoryHud().updateMouseCursor(x, y);
+  }
+
+  public void pressMouseButton(int x, int y) {
+    if (hud.getInventoryHud().isOpen())
+      hud.getInventoryHud().onMousePressed(x, y);
   }
 }

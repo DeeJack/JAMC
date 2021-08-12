@@ -179,4 +179,11 @@ public class WorldRenderableProvider implements RenderableProvider {
   public Chunk getChunk(int x, int y, int z) {
     return chunks[x / CHUNK_SIZE_X + z / CHUNK_SIZE_Z * (chunksOnX)];
   }
+
+  public Block getBlock(int x, int y, int z) {
+    int chunk = x / CHUNK_SIZE_X + z / CHUNK_SIZE_Z * (chunksOnX);
+    if (chunk != 0)
+      System.out.println("Chunk: " + chunk);
+    return chunks[chunk].get(x % CHUNK_SIZE_X, y, z % CHUNK_SIZE_Z);
+  }
 }

@@ -152,6 +152,18 @@ public class World {
     return false;
   }
 
+  public boolean checkCollision(Vector3 playerPosition, Vector3 targetPosition) {
+    var playerBounds = new BoundingBox();
+    playerBounds.set(new Vector3(-1.5F, -8, -1.5F), new Vector3(1.5F, 0, 1.5F)); // TODO: do this only one time on the creation of the player!
+    playerBounds.mul(new Matrix4().setToTranslation(playerPosition));
+
+    var blockBounds = new BoundingBox();
+    blockBounds.set(new Vector3(-2, -2, 2), new Vector3(2, 2, -2));
+    blockBounds.mul(new Matrix4().setToTranslation(targetPosition));
+
+    return playerBounds.intersects(blockBounds);
+  }
+
 
   public boolean checkCollision(Entity entity) {
     return checkCollision(entity.getPosition().scl(World.BLOCK_DISTANCE));
@@ -189,5 +201,9 @@ public class World {
    */
   public List<Block> getNearBlocks(Vector3 position) {
     return testWorld.getNearBlocks(position);
+  }
+
+  public Block getBlock(Vector3 coordinates) {
+    return testWorld.getBlock((int) coordinates.x, (int) coordinates.y, (int) coordinates.z);
   }
 }

@@ -57,35 +57,36 @@ public class UIInputProcessor implements InputProcessor {
 
   @Override
   public boolean keyTyped(char character) {
-    return ui.isGamePaused();
+    return ui.isGamePaused() || ui.isInventoryOpen();
   }
 
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-    return ui.isGamePaused();
+    ui.pressMouseButton(screenX, screenY);
+    return ui.isGamePaused() || ui.isInventoryOpen();
   }
 
   @Override
   public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-    return ui.isGamePaused();
+    return ui.isGamePaused() || ui.isInventoryOpen();
   }
 
   @Override
   public boolean touchDragged(int screenX, int screenY, int pointer) {
-    return ui.isGamePaused();
+    return ui.isGamePaused() || ui.isInventoryOpen();
   }
 
   @Override
   public boolean mouseMoved(int screenX, int screenY) {
     ui.updateCursorPosition(screenX, screenY);
-    return ui.isGamePaused();
+    return ui.isGamePaused() || ui.isInventoryOpen();
   }
 
   @Override
   public boolean scrolled(float amountX, float amountY) {
     System.out.println("X: " + amountX + ", Y: " + amountY);
     currentPlayer.getInventory().setSelectedSlot(currentPlayer.getInventory().getSelectedSlot() + (int) amountY);
-    return ui.isGamePaused();
+    return ui.isGamePaused() || ui.isInventoryOpen();
   }
 
 }

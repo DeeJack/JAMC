@@ -144,6 +144,10 @@ public class GameInputProcessor implements InputProcessor {
       if (block == null)
         return false;
       var nextCoords = findNextFreeBlock(block, intersection);
+      var targetBlock = world.getBlock(nextCoords);
+      System.out.println(nextCoords + " - " + targetBlock);
+      if (targetBlock != null) // A block is already present in the coordinates
+        return false;
       var currentItem = player.getInventory().getSelectedItem();
       if (currentItem != null) {
         var newBlock = Blocks.fromId(currentItem.getId());
