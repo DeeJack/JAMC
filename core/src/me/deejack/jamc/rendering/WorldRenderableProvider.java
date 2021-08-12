@@ -49,17 +49,15 @@ public class WorldRenderableProvider implements RenderableProvider {
    */
   private final boolean[] dirty;
   private final int[] numOfIndices;
-  private int lastRenderedChunks = 0;
-
   private final int chunksOnX;
   private final int chunksOnZ;
-
-  private int chunkOffset = 0;
+  private final int chunkOffset = 0;
+  private int lastRenderedChunks = 0;
 
   /**
    * Create the world
    *
-   * @param tiles     The textures to be used
+   * @param tiles  The textures to be used
    * @param chunks The number of chunks
    */
   public WorldRenderableProvider(TextureRegion[][] tiles, Texture fullTexture, int chunks) {
@@ -71,7 +69,7 @@ public class WorldRenderableProvider implements RenderableProvider {
 
     int currentChunk = 0;
 
-    for (int z = 0; z <  chunks / 2; z++) {
+    for (int z = 0; z < chunks / 2; z++) {
       for (int x = 0; x < chunks / 2; x++) {
         this.chunks[currentChunk++] = new Chunk(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z, x * CHUNK_SIZE_X, 0, z * CHUNK_SIZE_Z);
       }

@@ -60,7 +60,7 @@ public class GameInputProcessor implements InputProcessor {
       //pickRay.set(position, pickRay.direction.cpy().scl(-1F, 1F, -1F));
       //var end = new Vector3();
       //pickRay.getEndPoint(end, 6);
-     // pickRay.set(player.getPosition(), player.getCamera().direction);
+      // pickRay.set(player.getPosition(), player.getCamera().direction);
       //System.out.println("Dir: " + ray.direction + ", origin: " + ray.origin);
 
       var boundingBox = block.getBoundingBox();
@@ -85,9 +85,9 @@ public class GameInputProcessor implements InputProcessor {
     //  if (block.distanceFrom(position.x, position.y, position.z) < distance) {
     //    distance = block.distanceFrom(position.x, position.y, position.z);
     //    firstBlock = block;
-   //     outIntersection.set(intersections.get(i));
+    //     outIntersection.set(intersections.get(i));
     //  }
-   // }
+    // }
     /*for (var block : blocksHit) {
       if (block.distanceFrom(position.x, position.y, position.z) < distance) {
         distance = block.distanceFrom(position.x, position.y, position.z);
@@ -124,7 +124,7 @@ public class GameInputProcessor implements InputProcessor {
     } else if (pointedCoords2.x + World.BLOCK_DISTANCE == intersection.x) { // right
       System.out.println("Right");
       return new Vector3(pointedCoords.x + 1, pointedCoords.y, pointedCoords.z);
-    }else if (pointedCoords2.y == intersection.y) { // Bot
+    } else if (pointedCoords2.y == intersection.y) { // Bot
       System.out.println("Bot");
       return new Vector3(pointedCoords.x, pointedCoords.y - 1, pointedCoords.z);
     } else { // Top

@@ -6,15 +6,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class TextureCache {
+  private static final TextureCache INSTANCE = new TextureCache();
   private final int TEXTURE_SIZE = 16;
-  private TextureRegion tiles[][];
-  private Texture fullTexture;
-  private static TextureCache INSTANCE = new TextureCache();
-
-  private TextureCache() {
-    if (INSTANCE != null)
-      throw new AssertionError();
-  }
+  private final TextureRegion[][] tiles;
+  private final Texture fullTexture;
 
   {
     var textureAtlas = new TextureAtlas(Gdx.files.internal("models/minecraft.atlas"));
@@ -22,6 +17,11 @@ public class TextureCache {
     cubeTextureRegion.setRegionX(2);
     fullTexture = cubeTextureRegion.getTexture();
     tiles = cubeTextureRegion.split(TEXTURE_SIZE, TEXTURE_SIZE);
+  }
+
+  private TextureCache() {
+    if (INSTANCE != null)
+      throw new AssertionError();
   }
 
   public static TextureRegion[][] getTiles() {

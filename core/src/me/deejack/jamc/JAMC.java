@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.ScreenUtils;
+import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.hud.Hud;
 import me.deejack.jamc.hud.InventoryHud;
 import me.deejack.jamc.hud.UserInterface;
@@ -17,7 +18,6 @@ import me.deejack.jamc.input.GameInputProcessor;
 import me.deejack.jamc.input.PlayerMovementProcessor;
 import me.deejack.jamc.input.UIInputProcessor;
 import me.deejack.jamc.items.Items;
-import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.textures.TextureCache;
 import me.deejack.jamc.world.World;
 
@@ -101,7 +101,7 @@ public class JAMC implements ApplicationListener {
     var pickRay = currentPlayer.getCamera().getPickRay(currentPlayer.getCamera().viewportWidth / 2F, currentPlayer.getCamera().viewportHeight / 2F);
     //var end = new Vector3();
     //pickRay.getEndPoint(end, 6).add(0, 0, 1);
-   // var ray = new Ray(currentPlayer.getPosition().add(0, 0, 1), currentPlayer.getCamera().direction.cpy().add(0, 0, 1));
+    // var ray = new Ray(currentPlayer.getPosition().add(0, 0, 1), currentPlayer.getCamera().direction.cpy().add(0, 0, 1));
     //DebugHud.INSTANCE.renderLine(currentPlayer.getCamera(), new DebugHud.Line(pickRay.origin, end));
     DebugHud.INSTANCE.renderLine(currentPlayer.getCamera(), new DebugHud.Line(currentPlayer.getPosition().cpy().add(0, 0, 0.01F),
             pickRay.origin.cpy().add(pickRay.direction.cpy().scl(15)).add(0, 0, 0.01F)));

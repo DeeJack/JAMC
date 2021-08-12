@@ -163,7 +163,8 @@ public class World {
 
   /**
    * Place a block in the world
-   * @param block The type of the block
+   *
+   * @param block       The type of the block
    * @param coordinates The coordinates of the block (world coordinates)
    */
   public void placeBlock(Blocks block, Vector3 coordinates) {
@@ -173,6 +174,7 @@ public class World {
 
   /**
    * Remove the block from the world (Only the coordinates in the block are important)
+   *
    * @param block The block to remove
    */
   public void destroyBlock(Block block) {
@@ -181,6 +183,7 @@ public class World {
 
   /**
    * Get the blocks near a certain position
+   *
    * @param position The position (in world's coordinates)
    * @return The blocks near the position
    */

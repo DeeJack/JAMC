@@ -7,7 +7,7 @@ public class Inventory {
   private int selectedSlot = 1;
 
   public Inventory(int slots) {
-     items = new Item[slots];
+    items = new Item[slots];
   }
 
   public int getSlots() {
@@ -26,16 +26,16 @@ public class Inventory {
     items[slot] = item;
   }
 
+  public int getSelectedSlot() {
+    return selectedSlot;
+  }
+
   public void setSelectedSlot(int slot) {
     if (slot < 1)
       slot = 1;
     if (slot > 9)
       slot = 9;
     this.selectedSlot = slot;
-  }
-
-  public int getSelectedSlot() {
-    return selectedSlot;
   }
 
   public Item getSelectedItem() {

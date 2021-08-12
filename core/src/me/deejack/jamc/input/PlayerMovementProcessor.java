@@ -8,10 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.world.World;
 
-import javax.swing.plaf.RootPaneUI;
 import java.util.HashSet;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PlayerMovementProcessor implements InputProcessor {
   private final HashSet<Integer> pressedKey = new HashSet<>(); // Contains the currently pressed keys
@@ -156,8 +153,7 @@ public class PlayerMovementProcessor implements InputProcessor {
             var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
             if (!world.checkCollision(finalPosition))
               camera.translate(direction);
-          }
-          else {
+          } else {
             if (player.isJumping() || !world.checkCollision(player)) // If it's not on the ground, stop
               break;
 
@@ -173,7 +169,7 @@ public class PlayerMovementProcessor implements InputProcessor {
   private static class JumpThread extends Thread {
     private final Player player;
     private final PerspectiveCamera camera;
-    private float gameDeltaTime;
+    private final float gameDeltaTime;
 
     public JumpThread(Player player, float gameDeltaTime) {
       this.player = player;

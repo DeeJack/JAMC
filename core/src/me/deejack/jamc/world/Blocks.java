@@ -1,13 +1,11 @@
 package me.deejack.jamc.world;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -38,8 +36,8 @@ public enum Blocks {
   private final int frontTextureId;
   private final int backTextureId;
 
-  private Blocks(String name, int id, int topTextureId, int bottomTextureId, int leftTextureId,
-                 int rightTextureId, int frontTextureId, int backTextureId) {
+  Blocks(String name, int id, int topTextureId, int bottomTextureId, int leftTextureId,
+         int rightTextureId, int frontTextureId, int backTextureId) {
     this.name = name;
     this.id = id;
     this.topTextureId = topTextureId;
@@ -48,6 +46,10 @@ public enum Blocks {
     this.backTextureId = backTextureId;
     this.leftTextureId = leftTextureId;
     this.rightTextureId = rightTextureId;
+  }
+
+  public static Optional<Blocks> fromId(int id) {
+    return Arrays.stream(Blocks.values()).filter(block -> block.id == id).findFirst();
   }
 
   public Block createBlock(float x, float y, float z, Texture fullTexture, TextureRegion[][] tiles) {
@@ -109,9 +111,5 @@ public enum Blocks {
 
     return new Block(name, id, new Vector3(x, y, z), model,
             tiles[0][topTextureId], tiles[0][bottomTextureId], tiles[0][leftTextureId], tiles[0][rightTextureId], tiles[0][frontTextureId], tiles[0][backTextureId]);
-  }
-
-  public static Optional<Blocks> fromId(int id) {
-    return Arrays.stream(Blocks.values()).filter(block -> block.id == id).findFirst();
   }
 }

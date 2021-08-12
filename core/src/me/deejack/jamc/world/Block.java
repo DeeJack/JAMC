@@ -17,8 +17,6 @@ public class Block implements Drawable {
   private final Vector3 coordinates;
   private final ModelInstance modelInstance;
   private final BoundingBox boundingBox = new BoundingBox();
-  private boolean selected = false;
-
   private final TextureRegion topTexture;
   private final TextureRegion bottomTexture;
   private final TextureRegion leftTexture;
@@ -26,6 +24,7 @@ public class Block implements Drawable {
   private final TextureRegion frontTexture;
   private final TextureRegion backTexture;
   private final Vector3 center = new Vector3();
+  private boolean selected = false;
 
   public Block(String name, int id, Vector3 coordinates, Model model, TextureRegion topTexture, TextureRegion bottomTexture,
                TextureRegion leftTexture, TextureRegion rightTexture, TextureRegion frontTexture, TextureRegion backTexture) {
@@ -58,6 +57,7 @@ public class Block implements Drawable {
 
   /**
    * The distance from the center of the block
+   *
    * @return The distance from the center of the block
    */
   public float distanceFrom(float x, float y, float z) {

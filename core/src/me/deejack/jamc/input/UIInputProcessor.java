@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import me.deejack.jamc.JAMC;
-import me.deejack.jamc.hud.UserInterface;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.hud.UserInterface;
 
 public class UIInputProcessor implements InputProcessor {
   private final UserInterface ui;

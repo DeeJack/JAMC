@@ -6,11 +6,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import me.deejack.jamc.hud.utils.DebugHud;
 
-import java.util.ArrayList;
-
 public class DebugInputProcessor implements InputProcessor {
-  private boolean vsyncEnabled = false;
   private final Camera camera;
+  private boolean vsyncEnabled = false;
 
   public DebugInputProcessor(Camera camera) {
     this.camera = camera;

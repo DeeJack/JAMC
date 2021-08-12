@@ -1,7 +1,6 @@
 package me.deejack.jamc.entities;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 
 public interface Entity {
   float getGravityCoefficient();

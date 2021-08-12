@@ -8,17 +8,17 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import me.deejack.jamc.hud.utils.DebugHud;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.hud.utils.DebugHud;
 
 public class Hud {
+  private final InventoryHud inventoryHud;
   private OrthographicCamera hudCamera;
   private BitmapFont font;
   private SpriteBatch batch;
   private Texture crosshair;
   private InventoryBar inventoryBar;
   private Player currentPlayer;
-  private final InventoryHud inventoryHud;
 
   public Hud(InventoryHud inventoryHud) {
     this.inventoryHud = inventoryHud;
@@ -58,11 +58,11 @@ public class Hud {
     inventoryHud.render(batch);
 
     //if (JAMC.DEBUG) {
-      for (var text : DebugHud.INSTANCE.getTextToRender()) {
-        batch.setProjectionMatrix(hudCamera.combined);
-        font.draw(batch, text.text(), text.x(), text.y());
-      }
-   // }
+    for (var text : DebugHud.INSTANCE.getTextToRender()) {
+      batch.setProjectionMatrix(hudCamera.combined);
+      font.draw(batch, text.text(), text.x(), text.y());
+    }
+    // }
 
     DebugHud.INSTANCE.displayText(1, "Position: " + currentPlayer.getPosition() + "/" + currentPlayer.getCamera().position, 10, 10);
 

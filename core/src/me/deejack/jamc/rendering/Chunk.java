@@ -1,13 +1,10 @@
 package me.deejack.jamc.rendering;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.utils.Array;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.World;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
