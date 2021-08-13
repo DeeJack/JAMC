@@ -112,8 +112,6 @@ public class WorldRenderableProvider implements RenderableProvider {
 
   public void placeBlock(int x, int y, int z, Block block) {
     int chunk = x / CHUNK_SIZE_X + z / CHUNK_SIZE_Z * (chunksOnX);
-    if (chunk != 0)
-      System.out.println("Chunk: " + chunk);
     chunks[chunk].set(x % CHUNK_SIZE_X, y, z % CHUNK_SIZE_Z, block);
     dirty[chunk] = true;
   }
@@ -129,13 +127,45 @@ public class WorldRenderableProvider implements RenderableProvider {
   public List<Block> getNearBlocks(Vector3 position, int distance) {
     // TODO: multiple chunks if the player is in between various chunks! Add the adiacent chunks!
     int chunkIndex = (MathUtils.floor(position.x) / CHUNK_SIZE_X) + (MathUtils.floor(position.z) / CHUNK_SIZE_Z * chunksOnX);
-    if (chunkIndex != 0)
-      System.out.println("Current chunk: " + chunkIndex);
     if (chunkIndex < 0 || chunkIndex >= chunks.length)
       return new ArrayList<>();
-    var chunk = chunks[chunkIndex];
+
+    var chunksToCheck = new ArrayList<Chunk>();
+    boolean rightLoaded = false;
+    boolean topLoaded = false;
+    if (Math.abs(position.x % CHUNK_SIZE_X) < CHUNK_SIZE_X / 2F) { // Load the left one
+      if (chunkIndex - 1 >= 0)
+        chunksToCheck.add(chunks[chunkIndex - 1]);
+    } else { // Load the right one
+      rightLoaded = true;
+      if (chunkIndex < chunks.length - 1)
+        chunksToCheck.add(chunks[chunkIndex + 1]);
+    }
+    if (Math.abs(position.z % CHUNK_SIZE_Z) < CHUNK_SIZE_Z / 2F) {
+      if (chunkIndex - chunksOnZ >= 0)
+        chunksToCheck.add(chunks[chunkIndex - chunksOnZ]);
+    } else {
+      topLoaded = true;
+      if (chunkIndex + chunksOnZ < chunks.length)
+        chunksToCheck.add(chunks[chunkIndex + chunksOnZ]);
+    }
+    if (topLoaded && rightLoaded) { // Load also the chunk between the top and the right one
+      if (chunkIndex + chunksOnZ + 1 < chunks.length)
+        chunksToCheck.add(chunks[chunkIndex + chunksOnZ + 1]);
+    } else if (topLoaded) { // The left one on top
+      if (chunkIndex + chunksOnZ - 1 < chunks.length)
+        chunksToCheck.add(chunks[chunkIndex + chunksOnZ - 1]);
+    } else if (rightLoaded) { // Bottom right
+      if (chunkIndex - chunksOnZ + 1 >= 0)
+        chunksToCheck.add(chunks[chunkIndex - chunksOnZ + 1]);
+    } else { // Bottom left
+      if (chunkIndex - chunksOnZ - 1 >= 0)
+        chunksToCheck.add(chunks[chunkIndex - chunksOnZ - 1]);
+    }
     final int maxDistance = distance;
-    var nearBlocks = new ArrayList<>(chunk.getRenderedBlocks());
+    var nearBlocks = new ArrayList<>(chunks[chunkIndex].getRenderedBlocks());
+    for (var chunk : chunksToCheck)
+      nearBlocks.addAll(chunk.getRenderedBlocks());
 
     return nearBlocks.stream().filter(Objects::nonNull)
             .filter(block -> block.distanceFrom(position.x, position.y, position.z) < maxDistance)
