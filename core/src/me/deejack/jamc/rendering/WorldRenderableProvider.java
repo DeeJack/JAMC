@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WorldRenderableProvider implements RenderableProvider {
+  public static boolean SHOW_BOUNDING_BOXES = false;
+
   private final static int CHUNK_SIZE_X = 16;
   private final static int CHUNK_SIZE_Y = 256;
   private final static int CHUNK_SIZE_Z = 16;
@@ -125,7 +127,7 @@ public class WorldRenderableProvider implements RenderableProvider {
   }
 
   public List<Block> getNearBlocks(Vector3 position, int distance) {
-    // TODO: multiple chunks if the player is in between various chunks! Add the adiacent chunks!
+    // TODO: multiple chunks if the player is in between various chunks! Add the adjacent chunks!
     int chunkIndex = (MathUtils.floor(position.x) / CHUNK_SIZE_X) + (MathUtils.floor(position.z) / CHUNK_SIZE_Z * chunksOnX);
     if (chunkIndex < 0 || chunkIndex >= chunks.length)
       return new ArrayList<>();

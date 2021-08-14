@@ -1,27 +1,4 @@
 package me.deejack.jamc.events;
 
-import com.badlogic.gdx.graphics.Camera;
-
-public class KeyPressEvent implements Event<KeyPressData> {
-  private final Camera camera;
-
-  public KeyPressEvent(Camera camera) {
-    this.camera = camera;
-  }
-
-  @Override
-  public void onEvent(KeyPressData data) {
-  }
-}
-
-class KeyPressData {
-  private final int keyCode;
-
-  public KeyPressData(int keyCode) {
-    this.keyCode = keyCode;
-  }
-
-  public int getKeyCode() {
-    return keyCode;
-  }
+public class KeyPressEvent {
 }

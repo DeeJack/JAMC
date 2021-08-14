@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
-import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.hud.Hud;
@@ -32,8 +31,6 @@ public class JAMC implements ApplicationListener {
 
   @Override
   public void create() {
-    Bullet.init();
-
     var camera = new PerspectiveCamera(90, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // Set the width, height and a FOV of 70
     camera.position.set(10f, 65f, 10f); // we set the position 10 pixels to the right, 10 up and 10 to the back (z
     // is positive towards the viewer)

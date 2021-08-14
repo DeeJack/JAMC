@@ -1,5 +1,9 @@
 package me.deejack.jamc.events;
 
-public interface Event<P> {
-  void onEvent(P parameter);
+public interface Event {
+  void onEvent(EventData eventData);
+
+  default Priority getPriority() {
+    return Priority.NORMAL;
+  }
 }
