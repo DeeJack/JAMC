@@ -17,11 +17,11 @@ public class EventHandler {
     return INSTANCE;
   }
 
-  public <T extends EventData> void callEvent(Events eventType, T eventData) {
-    registeredEvents.stream()
+  public <T extends EventData> void callEvent(EventType eventType, T eventData) {
+    /*registeredEvents.stream()
             .filter(event -> event.getType() == eventType)
             .sorted(Comparator.comparing(Event::getPriority))
-            .forEach(event -> event.onEvent(eventData));
+            .forEach(event -> event.onEvent(eventData));*/
   }
 
   public void registerEvent(Event<EventData> event) {
