@@ -1,8 +1,8 @@
 package me.deejack.jamc.events;
 
-public enum Priority {
-  TOP,
+public @interface Priority {
+  /*TOP,
   HIGH,
   NORMAL,
-  LOW
+  LOW*/
 }

@@ -1,12 +1,14 @@
 package me.deejack.jamc.events;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EventHandler {
   private static final EventHandler INSTANCE = new EventHandler();
-  private final List<Event<EventData>> registeredEvents = new ArrayList<>();
+  // TODO: raw use of Event... what to do???
+  private final Map<EventType, List<Event<EventData>>> subscribers = new HashMap<>();
 
   private EventHandler() {
     if (INSTANCE != null)
@@ -17,14 +19,26 @@ public class EventHandler {
     return INSTANCE;
   }
 
-  public <T extends EventData> void callEvent(EventType eventType, T eventData) {
-    /*registeredEvents.stream()
-            .filter(event -> event.getType() == eventType)
-            .sorted(Comparator.comparing(Event::getPriority))
-            .forEach(event -> event.onEvent(eventData));*/
+  public static void registerEvent(EventType eventType, Event<EventData> event) {
+    INSTANCE.subscribe(eventType, event);
   }
 
-  public void registerEvent(Event<EventData> event) {
-    registeredEvents.add(event);
+  public static void call(EventType eventType, EventData eventData) {
+    INSTANCE.publish(eventType, eventData);
+  }
+
+  public void publish(EventType eventType, EventData eventData) {
+    System.out.println("Called " + eventType);
+    var eventSubscribers = subscribers.getOrDefault(eventType, new ArrayList<>());
+
+    eventSubscribers.forEach(event -> event.onEvent(eventData));
+    eventData.setCancelled(true);
+  }
+
+  public <T extends EventData> void subscribe(EventType eventType, Event<T> event) {
+    System.out.println("Subscribed to " + eventType);
+    var eventSubscribers = subscribers.computeIfAbsent(eventType, k -> new ArrayList<>());
+
+    eventSubscribers.add((Event<EventData>) event);
   }
 }

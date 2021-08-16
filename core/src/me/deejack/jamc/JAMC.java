@@ -12,10 +12,7 @@ import me.deejack.jamc.hud.Hud;
 import me.deejack.jamc.hud.InventoryHud;
 import me.deejack.jamc.hud.UserInterface;
 import me.deejack.jamc.hud.utils.DebugHud;
-import me.deejack.jamc.input.DebugInputProcessor;
-import me.deejack.jamc.input.GameInputProcessor;
-import me.deejack.jamc.input.PlayerMovementProcessor;
-import me.deejack.jamc.input.UIInputProcessor;
+import me.deejack.jamc.input.*;
 import me.deejack.jamc.items.Items;
 import me.deejack.jamc.textures.TextureCache;
 import me.deejack.jamc.world.World;
@@ -79,6 +76,7 @@ public class JAMC implements ApplicationListener {
       multipleInput.addProcessor(new DebugInputProcessor(hud.getCamera()));
 
     multipleInput.addProcessor(uiInputProcessor);
+    multipleInput.addProcessor(new EventInputProcessor());
     multipleInput.addProcessor(new GameInputProcessor(world, currentPlayer));
     multipleInput.addProcessor(movementProcessor);
     Gdx.input.setInputProcessor(multipleInput);

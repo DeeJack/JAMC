@@ -6,6 +6,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.events.EventHandler;
+import me.deejack.jamc.events.EventType;
+import me.deejack.jamc.events.presets.MouseEvent;
 import me.deejack.jamc.world.World;
 
 import java.util.HashSet;
@@ -75,18 +78,30 @@ public class PlayerMovementProcessor implements InputProcessor {
     int height = Gdx.graphics.getHeight();
     var camera = player.getCamera();
     var angleK = 0.3F; // Angle multiplier
+    float angleX = 0;
+    float angleY = 0;
 
     // I did not use the game delta time because this method is called the same number of times whether it's 1500fps or 60fps
     if (screenX - width / 2 != 0) {
-      var angle = angleK * -1 * (screenX - width / 2);
-      player.rotateCameraX(Vector3.Y, angle); // Rotate the camera around the Y axis
+      angleX = angleK * -1 * (screenX - width / 2F);
     }
     if (screenY - height / 2 != 0) {
-      var angle = angleK * -1 * (screenY - height / 2);
-      var rotationAxis = camera.direction.cpy().crs(camera.up);
-      player.rotateCameraY(rotationAxis, angle); // Rotate the camera around the cross product of the camera direction and the camera up vector
+      angleY = angleK * -1 * (screenY - height / 2F);
     }
     Gdx.input.setCursorPosition(width / 2, height / 2); // Reset the position to the center of the screen
+
+    var eventData = new MouseEvent.MouseMoveData(screenX, screenY, 0, 0);
+    EventHandler.call(EventType.MOUSE_MOVE, eventData);
+
+    if (eventData.isCancelled())
+      return true;
+
+    if (angleX != 0)
+      player.rotateCameraX(Vector3.Y, angleX); // Rotate the camera around the Y axis
+    if (angleY != 0) {
+      var rotationAxis = camera.direction.cpy().crs(camera.up);
+      player.rotateCameraY(rotationAxis, angleY); // Rotate the camera around the cross product of the camera direction and the camera up vector
+    }
     return true;
   }
 

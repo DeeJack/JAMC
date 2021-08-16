@@ -179,9 +179,10 @@ public class World {
    * @param block       The type of the block
    * @param coordinates The coordinates of the block (world coordinates)
    */
-  public void placeBlock(Blocks block, Vector3 coordinates) {
+  public Block placeBlock(Blocks block, Vector3 coordinates) {
     Block newBlock = block.createBlock(coordinates.x, coordinates.y, coordinates.z, fullTexture, tiles);
     testWorld.placeBlock((int) coordinates.x, (int) coordinates.y, (int) coordinates.z, newBlock);
+    return newBlock;
   }
 
   /**

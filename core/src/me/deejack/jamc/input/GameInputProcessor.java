@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.events.EventHandler;
+import me.deejack.jamc.events.EventType;
+import me.deejack.jamc.events.presets.BlockEvent;
 import me.deejack.jamc.items.Items;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.Blocks;
@@ -47,57 +50,20 @@ public class GameInputProcessor implements InputProcessor {
    */
   private Optional<Block> findPickedBlock(Vector3 outIntersection) {
     var position = player.getPosition();
-    //var asd = position.cpy();
-    //var pickRay = player.getCamera().getPickRay(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
-    //var blocksHit = new ArrayList<Block>();
-    //var intersections = new ArrayList<Vector3>();
     Block hitBlock = null;
     for (var block : world.getNearBlocks(position)) {
       var pickRay = player.getCamera().getPickRay(player.getCamera().viewportWidth / 2F, player.getCamera().viewportHeight / 2F);
-      //var ray = new Ray(position.cpy(), pickRay.direction.cpy().setLength(1).nor().scl(1));
       var ray2 = new Ray(pickRay.origin.cpy(), pickRay.direction.cpy().nor());
-      //var direction = pickRay.direction.scl(10).scl(-1, 1, -1);
-      //pickRay.set(player.getCamera().position, direction);
-      //System.out.println("Dir: "  + pickRay.direction);
-      //pickRay.set(position, pickRay.direction.cpy().scl(-1F, 1F, -1F));
-      //var end = new Vector3();
-      //pickRay.getEndPoint(end, 6);
-      // pickRay.set(player.getPosition(), player.getCamera().direction);
-      //System.out.println("Dir: " + ray.direction + ", origin: " + ray.origin);
 
       var boundingBox = block.getBoundingBox();
       block.getModel().calculateBoundingBox(boundingBox);
       boundingBox.mul(block.getModel().transform);
 
       if (Intersector.intersectRayBounds(ray2, boundingBox, outIntersection)) {
-        //System.out.println("Ray: " + ray2 + "; bounding box: " + boundingBox);
-        //System.out.println("Coords: " + block.getCoordinates());
         hitBlock = block;
-        //blocksHit.add(block);
-        //intersections.add(outIntersection);
         break;
-        //return Optional.of(block);
       }
     }
-    //Block firstBlock = blocksHit.size() == 0 ? null : blocksHit.get(0);
-    //float distance = 100;
-    //position = player.getPosition();
-    //for (int i = 0; i < blocksHit.size(); i++) {
-    //  var block = blocksHit.get(i);
-    //  if (block.distanceFrom(position.x, position.y, position.z) < distance) {
-    //    distance = block.distanceFrom(position.x, position.y, position.z);
-    //    firstBlock = block;
-    //     outIntersection.set(intersections.get(i));
-    //  }
-    // }
-    /*for (var block : blocksHit) {
-      if (block.distanceFrom(position.x, position.y, position.z) < distance) {
-        distance = block.distanceFrom(position.x, position.y, position.z);
-        firstBlock = block;
-        outIntersection.set(intersections.get(blocksHit.indexOf(block)));
-      }
-    }*/
-    //blocksHit.sort((first, second) -> (int) Math.min(first.distanceFrom(position.x, position.y, position.z), second.distanceFrom(position.x, position.y, position.z)));
     return Optional.ofNullable(hitBlock);
   }
 
@@ -115,58 +81,64 @@ public class GameInputProcessor implements InputProcessor {
     System.out.println(pointedCoords2 + " - " + intersection);
 
     if (pointedCoords2.z + World.BLOCK_DISTANCE == intersection.z) { // Front
-      System.out.println("Front");
       return new Vector3(pointedCoords.x, pointedCoords.y, pointedCoords.z + 1);
     } else if (pointedCoords2.z == intersection.z) { // Back
-      System.out.println("Back");
       return new Vector3(pointedCoords.x, pointedCoords.y, pointedCoords.z - 1);
     } else if (pointedCoords2.x == intersection.x) { // left
-      System.out.println("Left");
       return new Vector3(pointedCoords.x - 1, pointedCoords.y, pointedCoords.z);
     } else if (pointedCoords2.x + World.BLOCK_DISTANCE == intersection.x) { // right
-      System.out.println("Right");
       return new Vector3(pointedCoords.x + 1, pointedCoords.y, pointedCoords.z);
     } else if (pointedCoords2.y == intersection.y) { // Bot
-      System.out.println("Bot");
       return new Vector3(pointedCoords.x, pointedCoords.y - 1, pointedCoords.z);
     } else { // Top
-      System.out.println("Top");
       return new Vector3(pointedCoords.x, pointedCoords.y + 1, pointedCoords.z);
     }
   }
 
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    Vector3 intersection = new Vector3();
+    var block = findPickedBlock(intersection).orElse(null); // TODO: instead of null, use 'AIR'
+    if (block == null)
+      return false;
+
+    var eventData = new BlockEvent.BlockClickedData(block, button);
+    EventHandler.call(EventType.BLOCK_CLICK, eventData);
+    if (eventData.isCancelled())
+      return false;
+
     if (button == Input.Buttons.LEFT) {
-      var block = findPickedBlock(new Vector3());
-      block.ifPresent(world::destroyBlock);
-      block.ifPresent(pickedBlock -> {
-        var itemType = Arrays.stream(Items.values()).filter(item -> item.getId() == pickedBlock.getId()).findFirst();
-        itemType.ifPresent(item -> player.getInventory().addItem(item.createItem()));
-      });
-    } else if (button == Input.Buttons.RIGHT) {
-      Vector3 intersection = new Vector3();
-      var block = findPickedBlock(intersection).orElse(null);
-      if (block == null)
+      var blockData = new BlockEvent.BlockData(block);
+      EventHandler.call(EventType.BLOCK_BREAK, blockData);
+      if (blockData.isCancelled())
         return false;
+
+      world.destroyBlock(block);
+      var itemType = Arrays.stream(Items.values()).filter(item -> item.getId() == block.getId()).findFirst();
+      itemType.ifPresent(item -> player.getInventory().addItem(item.createItem()));
+    } else if (button == Input.Buttons.RIGHT) {
       var nextCoords = findNextFreeBlock(block, intersection);
       var targetBlock = world.getBlock(nextCoords);
       System.out.println(nextCoords + " - " + targetBlock);
       if (targetBlock != null) // A block is already present in the coordinates
         return false;
+
       var currentItem = player.getInventory().getSelectedItem();
       if (currentItem != null) {
-        var newBlock = Blocks.fromId(currentItem.getId());
+        var newBlockType = Blocks.fromId(currentItem.getId());
         if (currentItem.getQuantity() == 1)
           player.getInventory().addItem(null, player.getInventory().getSelectedSlot() - 1);
         currentItem.setQuantity(currentItem.getQuantity() - 1);
-        newBlock.ifPresent(type -> world.placeBlock(type, nextCoords));
+        if (newBlockType.isEmpty())
+          return false;
+        var newBlock = world.placeBlock(newBlockType.get(), nextCoords);
+
+        var placeData = new BlockEvent.BlockData(newBlock);
+        EventHandler.call(EventType.BLOCK_PLACE, placeData);
+        if (placeData.isCancelled())
+          return false;
       }
     } else if (button == Input.Buttons.MIDDLE) { // Middle click
-      Vector3 intersection = new Vector3();
-      var block = findPickedBlock(intersection).orElse(null);
-      if (block == null)
-        return false;
       var selectedItem = player.getInventory().getSelectedItem();
       if (selectedItem != null) // If the player has something in his hand stop
         return false;
