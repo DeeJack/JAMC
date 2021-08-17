@@ -22,6 +22,7 @@ public class UIInputProcessor implements InputProcessor {
       return true;
     switch (keyCode) {
       case Keys.ESCAPE:
+        Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
         ui.escMenu();
         return true;
       case Keys.NUM_1:
@@ -44,6 +45,7 @@ public class UIInputProcessor implements InputProcessor {
         JAMC.DEBUG = false;
         break;
       case Keys.E:
+        Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
         ui.toggleInventory();
     }
     return ui.isGamePaused();

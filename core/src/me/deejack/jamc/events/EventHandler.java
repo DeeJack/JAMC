@@ -32,7 +32,7 @@ public class EventHandler {
     var eventSubscribers = subscribers.getOrDefault(eventType, new ArrayList<>());
 
     eventSubscribers.forEach(event -> event.onEvent(eventData));
-    eventData.setCancelled(true);
+    //eventData.setCancelled(true);
   }
 
   public <T extends EventData> void subscribe(EventType eventType, Event<T> event) {

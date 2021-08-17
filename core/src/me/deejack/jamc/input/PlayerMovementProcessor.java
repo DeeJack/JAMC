@@ -9,6 +9,7 @@ import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.events.EventHandler;
 import me.deejack.jamc.events.EventType;
 import me.deejack.jamc.events.presets.MouseEvent;
+import me.deejack.jamc.events.presets.PlayerEvent;
 import me.deejack.jamc.world.World;
 
 import java.util.HashSet;
@@ -25,13 +26,14 @@ public class PlayerMovementProcessor implements InputProcessor {
 
   @Override
   public boolean keyDown(int keyCode) {
-    pressedKey.add(keyCode);
     var camera = (PerspectiveCamera) player.getCamera();
+
     switch (keyCode) {
       case Keys.C -> {
         camera.fieldOfView = 10;
       }
       case Keys.CONTROL_LEFT -> player.setVelocity(Player.RUNNING_VELOCITY);
+      default -> pressedKey.add(keyCode);
     }
     return true;
   }
@@ -39,14 +41,15 @@ public class PlayerMovementProcessor implements InputProcessor {
   @Override
   public boolean keyUp(int keyCode) {
     var camera = (PerspectiveCamera) player.getCamera();
+
     switch (keyCode) {
       case Keys.C -> {
         camera.fieldOfView = 90;
       }
       case Keys.F1 -> player.setFlying(!player.isFlying());
       case Keys.CONTROL_LEFT -> player.setVelocity(Player.WALKING_VELOCITY);
+      default -> pressedKey.remove(keyCode);
     }
-    pressedKey.remove(keyCode);
     return true;
   }
 
@@ -120,57 +123,57 @@ public class PlayerMovementProcessor implements InputProcessor {
     final float movementSpeed = player.getVelocity();
     final int flightSpeed = 10;
     var camera = (PerspectiveCamera) player.getCamera();
+
     for (var keyCode : pressedKey) {
+      Vector3 finalPosition = new Vector3();
+      Vector3 translationAxis = new Vector3();
+
       switch (keyCode) {
         case Keys.A -> {
           var direction = player.getDirection().cpy();
           var horizontal = direction.crs(camera.up);
           horizontal.scl(-movementSpeed * gameDeltaTime, 0F, -movementSpeed * gameDeltaTime);
-          var finalPosition = camera.position.cpy().add(horizontal).add(0, 0.5F, 0);
-          if (!world.checkCollision(finalPosition))
-            camera.translate(horizontal);
+
+          finalPosition.set(camera.position.cpy().add(horizontal).add(0, 0.5F, 0));
+          translationAxis.set(horizontal);
         }
         case Keys.D -> {
           var direction = player.getDirection().cpy();
           var horizontal = direction.crs(camera.up);
           horizontal.scl(movementSpeed * gameDeltaTime, 0F, movementSpeed * gameDeltaTime);
-          var finalPosition = camera.position.cpy().add(horizontal).add(0, 0.5F, 0);
-          if (!world.checkCollision(finalPosition))
-            camera.translate(horizontal);
+
+          finalPosition.set(camera.position.cpy().add(horizontal).add(0, 0.5F, 0));
+          translationAxis.set(horizontal);
         }
         case Keys.W -> {
-          //var direction = camera.direction.cpy();
           var direction = player.getDirection().cpy();
-          //var direction = camera.direction.
           direction.scl(movementSpeed * gameDeltaTime, 0, movementSpeed * gameDeltaTime);
-          var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
-          if (!world.checkCollision(finalPosition))
-            camera.translate(direction);
+
+          finalPosition.set(camera.position.cpy().add(direction).add(0, 0.5F, 0));
+          translationAxis.set(direction);
         }
         case Keys.S -> {
           var direction = player.getDirection().cpy();
           direction.scl(-movementSpeed * gameDeltaTime, 0, -movementSpeed * gameDeltaTime);
-          var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
-          if (!world.checkCollision(finalPosition))
-            camera.translate(direction);
+
+          finalPosition.set(camera.position.cpy().add(direction).add(0, 0.5F, 0));
+          translationAxis.set(direction);
         }
         case Keys.SHIFT_LEFT -> {
           var direction = new Vector3(0, -flightSpeed * gameDeltaTime, 0);
-          var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
-          System.out.println(finalPosition);
-          if (!world.checkCollision(finalPosition))
-            camera.translate(direction);
+
+          finalPosition.set(camera.position.cpy().add(direction).add(0, 0.5F, 0));
+          translationAxis.set(direction);
         }
         case Keys.SPACE -> {
           Vector3 direction = new Vector3();
           if (player.isFlying()) {
             direction.set(0, flightSpeed * gameDeltaTime, 0);
-            var finalPosition = camera.position.cpy().add(direction).add(0, 0.5F, 0);
-            if (!world.checkCollision(finalPosition))
-              camera.translate(direction);
+            finalPosition.set(camera.position.cpy().add(direction).add(0, 0.5F, 0));
+            translationAxis.set(direction);
           } else {
             if (player.isJumping() || !world.checkCollision(player)) // If it's not on the ground, stop
-              break;
+              continue;
 
             // TODO: the jumping is terrible...
             var jumpThread = new JumpThread(player, gameDeltaTime);
@@ -178,6 +181,16 @@ public class PlayerMovementProcessor implements InputProcessor {
           }
         }
       }
+      if (translationAxis.equals(new Vector3())) // It's not a movement
+        continue;
+
+      var eventData = new PlayerEvent.PlayerEventData(finalPosition, player);
+      EventHandler.call(EventType.PLAYER_MOVE, eventData);
+      if (eventData.isCancelled())
+        continue;
+
+      if (!world.checkCollision(finalPosition))
+        camera.translate(translationAxis);
     }
   }
 
