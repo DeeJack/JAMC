@@ -89,7 +89,6 @@ public class Player implements Entity {
   }
 
   public Vector3 getDirection() {
-    System.out.println("Camera angle x: " + cameraAngleX);
     return new Vector3(MathUtils.sin(-MathUtils.degreesToRadians * cameraAngleX), 0, -MathUtils.cos(MathUtils.degreesToRadians * cameraAngleX));
   }
 

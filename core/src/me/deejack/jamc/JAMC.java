@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.events.EventHandler;
+import me.deejack.jamc.events.TestEvent;
 import me.deejack.jamc.hud.Hud;
 import me.deejack.jamc.hud.InventoryHud;
 import me.deejack.jamc.hud.UserInterface;
@@ -83,6 +85,8 @@ public class JAMC implements ApplicationListener {
 
     profiler = new GLProfiler(Gdx.graphics);
     profiler.enable();
+
+    EventHandler.registerEvent(new TestEvent());
   }
 
   public void render() {

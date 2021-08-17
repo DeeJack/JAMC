@@ -86,7 +86,6 @@ public class UIInputProcessor implements InputProcessor {
 
   @Override
   public boolean scrolled(float amountX, float amountY) {
-    System.out.println("X: " + amountX + ", Y: " + amountY);
     currentPlayer.getInventory().setSelectedSlot(currentPlayer.getInventory().getSelectedSlot() + (int) amountY);
     return ui.isGamePaused() || ui.isInventoryOpen();
   }

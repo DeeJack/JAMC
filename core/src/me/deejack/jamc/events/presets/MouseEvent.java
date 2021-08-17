@@ -1,15 +1,18 @@
 package me.deejack.jamc.events.presets;
 
 import com.badlogic.gdx.Input;
+import me.deejack.jamc.events.EventCollection;
 import me.deejack.jamc.events.EventData;
+import me.deejack.jamc.events.EventType;
 
-public interface MouseEvent {
-  void onButtonPressed(KeyboardEvent.KeyboardData keyData);
+public interface MouseEvent extends EventCollection {
+  void onMouseButtonPressed(MousePressData buttonPressedData);
 
-  void onMouseMoved(KeyboardEvent.KeyboardData keyData);
+  void onMouseMoved(MouseMoveData mouseMoveData);
 
-  void onScrolled(KeyboardEvent.KeyboardData keyData);
+  void onScrolled(MouseScrollData mouseScrollData);
 
+  @EventType(eventType = EventType.EventTypes.MOUSE_MOVE)
   final class MouseMoveData extends EventData {
     private final int mouseX;
     private final int mouseY;
@@ -40,6 +43,7 @@ public interface MouseEvent {
     }
   }
 
+  @EventType(eventType = EventType.EventTypes.MOUSE_CLICK)
   final class MousePressData extends EventData {
     private final int buttonPressed;
     private final int screenX;
@@ -69,6 +73,7 @@ public interface MouseEvent {
     }
   }
 
+  @EventType(eventType = EventType.EventTypes.MOUSE_SCROLL)
   final class MouseScrollData extends EventData {
     private final float scrollAmount;
 

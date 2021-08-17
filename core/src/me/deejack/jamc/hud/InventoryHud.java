@@ -105,7 +105,6 @@ public class InventoryHud {
     y = y / SLOT_SIZE;
 
     y = NUM_OF_ROWS - y - 1; // The top left is Y:0, so I need to invert the index
-    System.out.println("X: " + (x / SLOT_SIZE) + ", Y: " + y);
     //int slotIndex = slots.length - 1 - ((x / SLOT_SIZE) + (y / SLOT_SIZE));
     int slotIndex = (x / SLOT_SIZE) + (y * ITEMS_PER_ROW);
     return slotIndex;

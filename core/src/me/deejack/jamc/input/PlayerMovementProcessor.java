@@ -94,7 +94,7 @@ public class PlayerMovementProcessor implements InputProcessor {
     Gdx.input.setCursorPosition(width / 2, height / 2); // Reset the position to the center of the screen
 
     var eventData = new MouseEvent.MouseMoveData(screenX, screenY, 0, 0);
-    EventHandler.call(EventType.MOUSE_MOVE, eventData);
+    EventHandler.call(EventType.EventTypes.MOUSE_MOVE, eventData);
 
     if (eventData.isCancelled())
       return true;
@@ -185,7 +185,7 @@ public class PlayerMovementProcessor implements InputProcessor {
         continue;
 
       var eventData = new PlayerEvent.PlayerEventData(finalPosition, player);
-      EventHandler.call(EventType.PLAYER_MOVE, eventData);
+      EventHandler.call(EventType.EventTypes.PLAYER_MOVE, eventData);
       if (eventData.isCancelled())
         continue;
 

@@ -1,14 +1,17 @@
 package me.deejack.jamc.events.presets;
 
+import me.deejack.jamc.events.EventCollection;
 import me.deejack.jamc.events.EventData;
+import me.deejack.jamc.events.EventType;
 
-import java.util.Objects;
-
-public interface KeyboardEvent {
+public interface KeyboardEvent extends EventCollection {
+  @EventType(eventType = EventType.EventTypes.KEY_PRESS)
   void onKeyPress(KeyboardData keyData);
 
+  @EventType(eventType = EventType.EventTypes.KEY_DOWN)
   void onKeyDown(KeyboardData keyData);
 
+  @EventType(eventType = EventType.EventTypes.KEY_UP)
   void onKeyUp(KeyboardData keyData);
 
   public final class KeyboardData extends EventData {
@@ -20,25 +23,6 @@ public interface KeyboardEvent {
 
     public int getKeyCode() {
       return keyCode;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (obj == this) return true;
-      if (obj == null || obj.getClass() != this.getClass()) return false;
-      var that = (KeyboardData) obj;
-      return this.keyCode == that.keyCode;
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(keyCode);
-    }
-
-    @Override
-    public String toString() {
-      return "KeyPressData[" +
-              "keyCode=" + keyCode + ']';
     }
   }
 }

@@ -78,7 +78,6 @@ public class GameInputProcessor implements InputProcessor {
     Vector3 pointedCoords = pointedBlock.getCoordinates().cpy();
     Vector3 pointedCoords2 = pointedBlock.getCoordinates().cpy();
     pointedCoords2.scl(World.BLOCK_DISTANCE);
-    System.out.println(pointedCoords2 + " - " + intersection);
 
     if (pointedCoords2.z + World.BLOCK_DISTANCE == intersection.z) { // Front
       return new Vector3(pointedCoords.x, pointedCoords.y, pointedCoords.z + 1);
@@ -103,13 +102,13 @@ public class GameInputProcessor implements InputProcessor {
       return false;
 
     var eventData = new BlockEvent.BlockClickedData(block, button);
-    EventHandler.call(EventType.BLOCK_CLICK, eventData);
+    EventHandler.call(EventType.EventTypes.BLOCK_CLICK, eventData);
     if (eventData.isCancelled())
       return false;
 
     if (button == Input.Buttons.LEFT) {
       var blockData = new BlockEvent.BlockData(block);
-      EventHandler.call(EventType.BLOCK_BREAK, blockData);
+      EventHandler.call(EventType.EventTypes.BLOCK_BREAK, blockData);
       if (blockData.isCancelled())
         return false;
 
@@ -119,7 +118,6 @@ public class GameInputProcessor implements InputProcessor {
     } else if (button == Input.Buttons.RIGHT) {
       var nextCoords = findNextFreeBlock(block, intersection);
       var targetBlock = world.getBlock(nextCoords);
-      System.out.println(nextCoords + " - " + targetBlock);
       if (targetBlock != null) // A block is already present in the coordinates
         return false;
 
@@ -134,7 +132,7 @@ public class GameInputProcessor implements InputProcessor {
         var newBlock = world.placeBlock(newBlockType.get(), nextCoords);
 
         var placeData = new BlockEvent.BlockData(newBlock);
-        EventHandler.call(EventType.BLOCK_PLACE, placeData);
+        EventHandler.call(EventType.EventTypes.BLOCK_PLACE, placeData);
         if (placeData.isCancelled())
           return false;
       }

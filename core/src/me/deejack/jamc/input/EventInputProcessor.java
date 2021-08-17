@@ -10,14 +10,14 @@ public class EventInputProcessor implements InputProcessor {
   @Override
   public boolean keyDown(int keycode) {
     var eventData = new KeyboardEvent.KeyboardData(keycode);
-    EventHandler.call(EventType.KEY_DOWN, eventData);
+    EventHandler.call(EventType.EventTypes.KEY_DOWN, eventData);
     return eventData.isCancelled();
   }
 
   @Override
   public boolean keyUp(int keycode) {
     var eventData = new KeyboardEvent.KeyboardData(keycode);
-    EventHandler.call(EventType.KEY_UP, eventData);
+    EventHandler.call(EventType.EventTypes.KEY_UP, eventData);
     return eventData.isCancelled();
   }
 
@@ -29,7 +29,7 @@ public class EventInputProcessor implements InputProcessor {
   @Override
   public boolean touchDown(int screenX, int screenY, int pointer, int button) {
     var eventData = new MouseEvent.MousePressData(screenX, screenY, button);
-    EventHandler.call(EventType.MOUSE_CLICK, eventData);
+    EventHandler.call(EventType.EventTypes.MOUSE_CLICK, eventData);
     return eventData.isCancelled();
   }
 
@@ -51,7 +51,7 @@ public class EventInputProcessor implements InputProcessor {
   @Override
   public boolean scrolled(float amountX, float amountY) {
     var eventData = new MouseEvent.MouseScrollData(amountY);
-    EventHandler.call(EventType.MOUSE_MOVE, eventData);
+    EventHandler.call(EventType.EventTypes.MOUSE_SCROLL, eventData);
     return eventData.isCancelled();
   }
 }
