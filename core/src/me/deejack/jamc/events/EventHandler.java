@@ -83,7 +83,7 @@ public class EventHandler {
           } catch (NoSuchMethodException ignored) {
           }
         }
-        if (!foundType) // If the type wasn't foud
+        if (!foundType) // If the type wasn't found
           continue;
       } else
         continue;

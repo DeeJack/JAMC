@@ -14,7 +14,6 @@ public interface BlockEvent extends EventCollection {
 
   void onBlockClicked(BlockClickedData blockData);
 
-  @EventType(eventType = EventType.EventTypes.BLOCK_PLACE)
   class BlockData extends EventData {
     // TODO: give a DTO block, not the one with the texture etc.
     private final Block block;

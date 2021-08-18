@@ -54,7 +54,6 @@ public class UIInputProcessor implements InputProcessor {
   @Override
   public boolean keyUp(int keycode) {
     return false;
-    //return ui.isGamePaused();
   }
 
   @Override

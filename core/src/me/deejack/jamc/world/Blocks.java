@@ -86,30 +86,11 @@ public enum Blocks {
     var model = modelBuilder.end();
     cache.put(this, model);
 
-    /**
-     * MeshPartBuilder meshBuilder = modelBuilder.part("box", GL20.GL_TRIANGLES, attributes,
-     *             new Material(TextureAttribute.createDiffuse(fullTexture)));
-     *     meshBuilder.setUVRange(tiles[0][backTextureId]);
-     *     meshBuilder.rect(new Vector3(2, -2, -2), new Vector3(-2, -2, -2), new Vector3(-2, 2, -2),
-     *             new Vector3(2, 2, -2), new Vector3(0, 0, -1)); // Back face
-     *     meshBuilder.setUVRange(tiles[0][frontTextureId]);
-     *     meshBuilder.rect(new Vector3(-2, -2, 2), new Vector3(2, -2, 2), new Vector3(2, 2, 2),
-     *             new Vector3(-2, 2, 2), new Vector3(0, 0, -1));
-     *     meshBuilder.setUVRange(tiles[0][bottomTextureId]);
-     *     meshBuilder.rect(new Vector3(2, -2, 2), new Vector3(-2, -2, 2), new Vector3(-2, -2, -2),
-     *             new Vector3(2, -2, -2), new Vector3(0, -1, 0));
-     *     meshBuilder.setUVRange(tiles[0][topTextureId]);
-     *     meshBuilder.rect(new Vector3(-2, 2, -2), new Vector3(-2, 2, 2), new Vector3(2, 2, 2),
-     *             new Vector3(2, 2, -2), new Vector3(0, 1, 0));
-     *     meshBuilder.setUVRange(tiles[0][leftTextureId]);
-     *     meshBuilder.rect(new Vector3(-2, -2, -2), new Vector3(-2, -2, 2), new Vector3(-2, 2, 2),
-     *             new Vector3(-2, 2, -2), new Vector3(-1, 0, 0));
-     *     meshBuilder.setUVRange(tiles[0][rightTextureId]);
-     *     meshBuilder.rect(new Vector3(2, -2, 2), new Vector3(2, -2, -2), new Vector3(2, 2, -2),
-     *             new Vector3(2, 2, 2), new Vector3(1, 0, 0));
-     */
-
     return new Block(name, id, new Vector3(x, y, z), model,
             tiles[0][topTextureId], tiles[0][bottomTextureId], tiles[0][leftTextureId], tiles[0][rightTextureId], tiles[0][frontTextureId], tiles[0][backTextureId]);
+  }
+
+  public int getId() {
+    return id;
   }
 }

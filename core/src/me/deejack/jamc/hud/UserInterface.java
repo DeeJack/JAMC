@@ -2,9 +2,11 @@ package me.deejack.jamc.hud;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
+import me.deejack.jamc.hud.settings.SettingsPage;
 
 public class UserInterface {
   private final Hud hud;
+  private final SettingsPage mainSettingsPage = new SettingsPage();
   private boolean paused = false;
 
   public UserInterface(Hud hud) {
