@@ -3,7 +3,8 @@ package me.deejack.jamc.items;
 public enum Categories {
   COMBAT("Combat"),
   FOOD("Food"),
-  BLOCKS("Blocks");
+  BLOCK("Block"),
+  ENTITY("Entity");
   private final String name;
 
   Categories(String name) {

@@ -1,13 +1,10 @@
 package me.deejack.jamc.events;
 
 import me.deejack.jamc.events.presets.Listener;
-import me.deejack.jamc.world.Blocks;
 
 public class TestEvent implements Listener {
   @Override
   public void onBlockBreak(BlockData blockData) {
-    if (blockData.getBlock().getId() != Blocks.GRASS.getId())
-      blockData.setCancelled(true);
     System.out.println("Block break: " + blockData.getBlock().getId() + ", coordinates: " + blockData.getBlock().getCoordinates());
   }
 
@@ -65,6 +62,5 @@ public class TestEvent implements Listener {
   @Override
   public void onScrolled(MouseScrollData mouseScrollData) {
     mouseScrollData.setCancelled(true);
-
   }
 }

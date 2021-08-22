@@ -22,9 +22,10 @@ public enum Blocks {
   ASD("asd", 2, 0, 1, 2, 3, 4, 5),
   GRASS("Grass", 1, 0, 2, 3, 3, 3, 3),
   DIRT("Dirt", 3, 2, 2, 2, 2, 2, 2),
-  OAK_WOOD_PLANK("Oak Wood Plank", 4, 4, 4, 4, 4, 4, 4);
+  OAK_WOOD_PLANK("Oak Wood Plank", 4, 4, 4, 4, 4, 4, 4),
+  GOLD_ORE("Gold ore", 5, 32, 32, 32, 32, 32, 32);
 
-  private final static int TEXTURE_SIZE = 16;
+  public final static int TEXTURE_PER_ROW = 16;
   private final static Map<Blocks, Model> cache = new HashMap<>();
 
   private final String name;
@@ -55,7 +56,9 @@ public enum Blocks {
   public Block createBlock(float x, float y, float z, Texture fullTexture, TextureRegion[][] tiles) {
     if (cache.containsKey(this)) {
       return new Block(name, id, new Vector3(x, y, z), cache.get(this),
-              tiles[0][topTextureId], tiles[0][bottomTextureId], tiles[0][leftTextureId], tiles[0][rightTextureId], tiles[0][frontTextureId], tiles[0][backTextureId]);
+              tiles[topTextureId / TEXTURE_PER_ROW][topTextureId % TEXTURE_PER_ROW], tiles[bottomTextureId / TEXTURE_PER_ROW][bottomTextureId % TEXTURE_PER_ROW],
+              tiles[leftTextureId / TEXTURE_PER_ROW][leftTextureId % TEXTURE_PER_ROW], tiles[rightTextureId / TEXTURE_PER_ROW][rightTextureId % TEXTURE_PER_ROW],
+              tiles[frontTextureId / TEXTURE_PER_ROW][frontTextureId % TEXTURE_PER_ROW], tiles[backTextureId / TEXTURE_PER_ROW][backTextureId % TEXTURE_PER_ROW]);
     }
     System.out.println("Creating model");
     int attributes = Usage.Position | Usage.Normal | Usage.TextureCoordinates;
@@ -65,29 +68,31 @@ public enum Blocks {
     //        new Material(ColorAttribute.createDiffuse(Color.BLACK)), attributes);
     MeshPartBuilder meshBuilder = modelBuilder.part("box", GL20.GL_TRIANGLES, attributes,
             new Material(TextureAttribute.createDiffuse(fullTexture)));
-    meshBuilder.setUVRange(tiles[0][backTextureId]);
+    meshBuilder.setUVRange(tiles[backTextureId % TEXTURE_PER_ROW][backTextureId % TEXTURE_PER_ROW]);
     meshBuilder.rect(new Vector3(0, 0, 0), new Vector3(0, 4, 0), new Vector3(4, 0, 0),
             new Vector3(4, 4, 0), new Vector3(0, 0, -1)); // Back face
-    meshBuilder.setUVRange(tiles[0][frontTextureId]);
+    meshBuilder.setUVRange(tiles[frontTextureId % TEXTURE_PER_ROW][frontTextureId % TEXTURE_PER_ROW]);
     meshBuilder.rect(new Vector3(0, 0, 4), new Vector3(0, 4, 4), new Vector3(4, 0, 4),
             new Vector3(4, 4, 4), new Vector3(0, 0, 1)); // Front face
-    meshBuilder.setUVRange(tiles[0][bottomTextureId]);
+    meshBuilder.setUVRange(tiles[bottomTextureId % TEXTURE_PER_ROW][bottomTextureId % TEXTURE_PER_ROW]);
     meshBuilder.rect(new Vector3(0, 0, 0), new Vector3(0, 0, 4), new Vector3(4, 0, 4),
             new Vector3(4, 0, 0), new Vector3(0, -1, 1)); // Bottom face
-    meshBuilder.setUVRange(tiles[0][topTextureId]);
+    meshBuilder.setUVRange(tiles[topTextureId % TEXTURE_PER_ROW][topTextureId % TEXTURE_PER_ROW]);
     meshBuilder.rect(new Vector3(0, 4, 0), new Vector3(0, 4, 4), new Vector3(4, 4, 4),
             new Vector3(4, 4, 0), new Vector3(0, 1, 0)); // Top face
-    meshBuilder.setUVRange(tiles[0][leftTextureId]);
+    meshBuilder.setUVRange(tiles[leftTextureId % TEXTURE_PER_ROW][leftTextureId % TEXTURE_PER_ROW]);
     meshBuilder.rect(new Vector3(0, 4, 0), new Vector3(0, 4, 4), new Vector3(0, 0, 4),
             new Vector3(0, 0, 0), new Vector3(-1, 0, 0)); // Left face
-    meshBuilder.setUVRange(tiles[0][rightTextureId]);
+    meshBuilder.setUVRange(tiles[rightTextureId % TEXTURE_PER_ROW][rightTextureId % TEXTURE_PER_ROW]);
     meshBuilder.rect(new Vector3(4, 4, 0), new Vector3(4, 4, 4), new Vector3(4, 0, 4),
             new Vector3(4, 0, 0), new Vector3(1, 0, 0)); // Right face
     var model = modelBuilder.end();
     cache.put(this, model);
 
     return new Block(name, id, new Vector3(x, y, z), model,
-            tiles[0][topTextureId], tiles[0][bottomTextureId], tiles[0][leftTextureId], tiles[0][rightTextureId], tiles[0][frontTextureId], tiles[0][backTextureId]);
+            tiles[topTextureId / TEXTURE_PER_ROW][topTextureId % TEXTURE_PER_ROW], tiles[bottomTextureId / TEXTURE_PER_ROW][bottomTextureId % TEXTURE_PER_ROW],
+            tiles[leftTextureId / TEXTURE_PER_ROW][leftTextureId % TEXTURE_PER_ROW], tiles[rightTextureId / TEXTURE_PER_ROW][rightTextureId % TEXTURE_PER_ROW],
+            tiles[frontTextureId / TEXTURE_PER_ROW][frontTextureId % TEXTURE_PER_ROW], tiles[backTextureId / TEXTURE_PER_ROW][backTextureId % TEXTURE_PER_ROW]);
   }
 
   public int getId() {
