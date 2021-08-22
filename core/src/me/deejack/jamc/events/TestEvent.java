@@ -51,7 +51,6 @@ public class TestEvent implements Listener {
   @Override
   public void onMove(PlayerEventData eventData) {
     System.out.println("Player moved to " + eventData.getTargetPosition());
-    eventData.setCancelled(true);
   }
 
   @Override

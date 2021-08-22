@@ -6,22 +6,25 @@ import me.deejack.jamc.hud.settings.SettingsPage;
 
 public class UserInterface {
   private final Hud hud;
-  private final SettingsPage mainSettingsPage = new SettingsPage();
+  private final SettingsPage mainSettings;
   private boolean paused = false;
 
-  public UserInterface(Hud hud) {
+  public UserInterface(Hud hud, SettingsPage mainSettings) {
     this.hud = hud;
+    this.mainSettings = mainSettings;
   }
 
   public void escMenu() {
     paused = !paused;
-    Gdx.input.setCursorCatched(!paused);
     Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
-    if (paused)
+    Gdx.input.setCursorCatched(!paused);
+    if (paused) {
       Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
-    else
+      mainSettings.open();
+    } else {
       Gdx.graphics.setSystemCursor(SystemCursor.Crosshair);
-
+      mainSettings.close();
+    }
   }
 
   public boolean isGamePaused() {

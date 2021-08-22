@@ -22,7 +22,6 @@ public class UIInputProcessor implements InputProcessor {
       return true;
     switch (keyCode) {
       case Keys.ESCAPE:
-        Gdx.input.setCursorPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
         ui.escMenu();
         return true;
       case Keys.NUM_1:
