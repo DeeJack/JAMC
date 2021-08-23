@@ -61,45 +61,23 @@ public class World {
       }
     }*/
 
-    testWorld = new WorldRenderableProvider(tiles, fullTexture, 4);
+    testWorld = new WorldRenderableProvider(tiles, fullTexture, 9);
     // TODO: fill chunk method
+    testWorld.fillChunk(0, Blocks.GRASS);
     for (int x = 0; x < 16; x++) {
-      for (int y = 0; y < 7; y++) {
-        for (int z = 0; z < 16; z++) {
-          var grass = Blocks.GRASS.createBlock(x, y, z, fullTexture, tiles);
-          var dirt = Blocks.DIRT.createBlock(x, y, z, fullTexture, tiles);
-          testWorld.placeBlock(x, y, z, y == 6 ? grass : dirt);
-        }
+      for (int z = 0; z < 16; z++) {
+        var grass = Blocks.GRASS.createBlock(x, 6, z);
+        testWorld.placeBlock(x, 6, z, grass);
       }
     }
-
-    for (int x = 16; x < 32; x++) {
-      for (int y = 0; y < 7; y++) {
-        for (int z = 16; z < 32; z++) {
-          var grass = Blocks.STONE.createBlock(x, y, z, fullTexture, tiles);
-          testWorld.placeBlock(x, y, z, grass);
-        }
-      }
-    }
-    for (int x = 16; x < 32; x++) {
-      for (int y = 0; y < 7; y++) {
-        for (int z = 0; z < 16; z++) {
-          var grass = Blocks.ASD.createBlock(x, y, z, fullTexture, tiles);
-          testWorld.placeBlock(x, y, z, grass);
-        }
-      }
-    }
-    for (int x = 0; x < 16; x++) {
-      for (int y = 0; y < 7; y++) {
-        for (int z = 16; z < 32; z++) {
-          var grass = Blocks.OAK_WOOD_PLANK.createBlock(x, y, z, fullTexture, tiles);
-          testWorld.placeBlock(x, y, z, grass);
-        }
-      }
-    }
-
-    var grass = Blocks.GRASS.createBlock(0, 0, 0, fullTexture, tiles);
-//testWorld.placeBlock(0, 0, 0, grass);
+    testWorld.fillChunk(1, Blocks.STONE);
+    testWorld.fillChunk(2, Blocks.DIRT);
+    testWorld.fillChunk(3, Blocks.OAK_WOOD_PLANK);
+    testWorld.fillChunk(4, Blocks.STONE);
+    testWorld.fillChunk(5, Blocks.DIRT);
+    testWorld.fillChunk(6, Blocks.GOLD_ORE);
+    testWorld.fillChunk(7, Blocks.OAK_WOOD_PLANK);
+    testWorld.fillChunk(8, Blocks.STONE);
   }
 
   public void render(Camera camera, float gameDeltaTime) {
@@ -180,7 +158,7 @@ public class World {
    * @param coordinates The coordinates of the block (world coordinates)
    */
   public Block placeBlock(Blocks block, Vector3 coordinates) {
-    Block newBlock = block.createBlock(coordinates.x, coordinates.y, coordinates.z, fullTexture, tiles);
+    Block newBlock = block.createBlock(coordinates.x, coordinates.y, coordinates.z);
     testWorld.placeBlock((int) coordinates.x, (int) coordinates.y, (int) coordinates.z, newBlock);
     return newBlock;
   }
