@@ -126,7 +126,6 @@ public class WorldRenderableProvider implements RenderableProvider {
       x = CHUNK_SIZE_X - (-x % CHUNK_SIZE_X);
     if (z < 0)
       z = CHUNK_SIZE_Z - (-z % CHUNK_SIZE_Z);
-    System.out.println(chunkIndex);
     chunks[chunkIndex].set(Math.abs(x % CHUNK_SIZE_X), y, Math.abs(z % CHUNK_SIZE_Z), block);
     dirty[chunkIndex] = true;
   }
@@ -140,31 +139,31 @@ public class WorldRenderableProvider implements RenderableProvider {
   }
 
   public List<Block> getNearBlocks(Vector3 position, int distance) {
-    // TODO: multiple chunks if the player is in between various chunks! Add the adjacent chunks!
-    System.out.println(position);
-    // int chunkIndex = (MathUtils.ceil((position.x / CHUNK_SIZE_X) +
-    //       MathUtils.floor(position.z / CHUNK_SIZE_Z) * chunksPerRow)) + chunksPerRow;
     int chunkIndex = getChunkIndex(position.x, position.z);
     System.out.println(chunkIndex);
     if (chunkIndex < 0 || chunkIndex >= chunks.length)
       return new ArrayList<>();
-    System.out.println("Size: " + chunks[chunkIndex].getRenderedBlocks().size());
 
     var chunksToCheck = new ArrayList<Chunk>();
     boolean rightLoaded = false;
     boolean topLoaded = false;
-    if (Math.abs(position.x % CHUNK_SIZE_X) < CHUNK_SIZE_X / 2F) { // Load the left one
+    System.out.println(position);
+    if ((position.x >= 0 && position.x % CHUNK_SIZE_X < CHUNK_SIZE_X / 2F) || (position.x < 0 && Math.abs(position.x % CHUNK_SIZE_X) >= CHUNK_SIZE_X / 2F)) { // Load the left one
+      System.out.println("Left loaded");
       if (chunkIndex - 1 >= 0)
         chunksToCheck.add(chunks[chunkIndex - 1]);
     } else { // Load the right one
+      System.out.println("Right loaded");
       rightLoaded = true;
-      if (chunkIndex < chunks.length - 1)
+      if (chunkIndex + 1 < chunks.length)
         chunksToCheck.add(chunks[chunkIndex + 1]);
     }
-    if (Math.abs(position.z % CHUNK_SIZE_Z) < CHUNK_SIZE_Z / 2F) {
+    if ((position.z >= 0 && position.z % CHUNK_SIZE_Z < CHUNK_SIZE_Z / 2F) || (position.z < 0 && Math.abs(position.z % CHUNK_SIZE_Z) >= CHUNK_SIZE_X / 2F)) {
+      System.out.println("Bottom loaded");
       if (chunkIndex - chunksPerRow >= 0)
         chunksToCheck.add(chunks[chunkIndex - chunksPerRow]);
     } else {
+      System.out.println("Top loaded");
       topLoaded = true;
       if (chunkIndex + chunksPerRow < chunks.length)
         chunksToCheck.add(chunks[chunkIndex + chunksPerRow]);
@@ -191,6 +190,10 @@ public class WorldRenderableProvider implements RenderableProvider {
             .filter(block -> block.distanceFrom(position.x, position.y, position.z) < maxDistance)
             .sorted(Comparator.comparingDouble(block -> block.distanceFrom(position.x, position.y, position.z)))
             .collect(Collectors.toList());
+  }
+
+  private List<Chunk> getAdiacentChunks(int chunkIndex) {
+    return null;
   }
 
   @Override
