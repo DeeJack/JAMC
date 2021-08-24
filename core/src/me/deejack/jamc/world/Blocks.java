@@ -18,13 +18,18 @@ import java.util.Map;
 import java.util.Optional;
 
 public enum Blocks {
-  STONE("Stone", 0, 1, 1, 1, 1, 1, 1),
+  STONE("Stone", 0, 1),
   // STONE("Stone", 0, 1, 2, 3, 4, 5, 6);
   ASD("asd", 2, 0, 1, 2, 3, 4, 5),
   GRASS("Grass", 1, 0, 2, 3, 3, 3, 3),
-  DIRT("Dirt", 3, 2, 2, 2, 2, 2, 2),
-  OAK_WOOD_PLANK("Oak Wood Plank", 4, 4, 4, 4, 4, 4, 4),
-  GOLD_ORE("Gold ore", 5, 32, 32, 32, 32, 32, 32);
+  DIRT("Dirt", 3, 2),
+  OAK_WOOD_PLANK("Oak Wood Plank", 4, 4),
+  GOLD_ORE("Gold ore", 5, 32),
+  IRON_ORE("Iron ore", 6, 33),
+  COAL_ORE("Coal ore", 7, 34),
+  BEDROCK("Bedrock", 8, 17),
+  DIAMOND_ORE("Diamond ore", 9, 50),
+  REDSTONE_ORE("Redstone ore", 10, 51);
 
   public final static int TEXTURE_PER_ROW = 16;
   private final static Map<Blocks, Model> cache = new HashMap<>();
@@ -37,6 +42,10 @@ public enum Blocks {
   private final int rightTextureId;
   private final int frontTextureId;
   private final int backTextureId;
+
+  Blocks(String name, int id, int topTextureId) {
+    this(name, id, topTextureId, topTextureId, topTextureId, topTextureId, topTextureId, topTextureId);
+  }
 
   Blocks(String name, int id, int topTextureId, int bottomTextureId, int leftTextureId,
          int rightTextureId, int frontTextureId, int backTextureId) {

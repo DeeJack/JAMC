@@ -21,7 +21,7 @@ import me.deejack.jamc.world.World;
 
 public class JAMC implements ApplicationListener {
   public final static float GAME_TIME_FACTOR = 2;
-  public static float MASTER_VOLUME = 50;
+  public static float MASTER_VOLUME = 0;
   public static boolean DEBUG = false;
   private PlayerMovementProcessor movementProcessor;
   private World world;

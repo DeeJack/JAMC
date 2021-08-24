@@ -19,6 +19,7 @@ import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.rendering.WorldRenderableProvider;
 
 import java.util.List;
+import java.util.Random;
 
 public class World {
   public static final int BLOCK_DISTANCE = 4;
@@ -64,20 +65,19 @@ public class World {
     testWorld = new WorldRenderableProvider(tiles, fullTexture, 9);
     // TODO: fill chunk method
     testWorld.fillChunk(0, Blocks.GRASS);
+    Random random = new Random();
+
+    for (int i = 1; i < 9; i++) {
+      Blocks blockType = Blocks.values()[random.nextInt(Blocks.values().length)];
+      testWorld.fillChunk(i, blockType);
+    }
+
     for (int x = 0; x < 16; x++) {
       for (int z = 0; z < 16; z++) {
         var grass = Blocks.GRASS.createBlock(x, 6, z);
         testWorld.placeBlock(x, 6, z, grass);
       }
     }
-    testWorld.fillChunk(1, Blocks.STONE);
-    testWorld.fillChunk(2, Blocks.DIRT);
-    testWorld.fillChunk(3, Blocks.OAK_WOOD_PLANK);
-    testWorld.fillChunk(4, Blocks.STONE);
-    testWorld.fillChunk(5, Blocks.DIRT);
-    testWorld.fillChunk(6, Blocks.GOLD_ORE);
-    testWorld.fillChunk(7, Blocks.OAK_WOOD_PLANK);
-    testWorld.fillChunk(8, Blocks.STONE);
   }
 
   public void render(Camera camera, float gameDeltaTime) {

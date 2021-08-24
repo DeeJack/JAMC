@@ -22,7 +22,10 @@ public class UIInputProcessor implements InputProcessor {
       return true;
     switch (keyCode) {
       case Keys.ESCAPE:
-        ui.escMenu();
+        if (ui.isInventoryOpen())
+          ui.toggleInventory();
+        else
+          ui.escMenu();
         return true;
       case Keys.NUM_1:
       case Keys.NUM_2:

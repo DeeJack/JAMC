@@ -114,9 +114,14 @@ public class WorldRenderableProvider implements RenderableProvider {
   }
 
   private int getChunkIndex(float x, float z) {
-    // +0.001F because otherwise the (0, 0) [x, y] point would be in the wrong chunk, it shouldn't interfere with the other points
-    return (MathUtils.ceil(((x + 0.001F) / CHUNK_SIZE_X) +
-            MathUtils.floor(z / CHUNK_SIZE_Z) * chunksPerRow)) + chunksPerRow;
+    var minAddingValueX = 0.0001F;
+    var minAddingValueZ = 0.0001F;
+    // This whole formula was made with more like a trial-error procedure, so I can't really tell what it does, but it works.
+    int rowIndex = (int) Math.ceil((z + minAddingValueZ) / CHUNK_SIZE_Z) + (int) Math.floor(chunksPerRow / 2F) - 1;
+    int colIndex = (int) (Math.ceil((x + minAddingValueX) / CHUNK_SIZE_X) + (int) Math.floor(chunksPerRow / 2F) - 1);
+    return (rowIndex * chunksPerRow) + colIndex;
+    /*return (MathUtils.ceil((x / (float) CHUNK_SIZE_X) +
+            MathUtils.ceil((z / (float) CHUNK_SIZE_Z)) * chunksPerRow)) + chunksPerRow + 1;*/
   }
 
   public void placeBlock(int x, int y, int z, Block block) {
@@ -147,23 +152,18 @@ public class WorldRenderableProvider implements RenderableProvider {
     var chunksToCheck = new ArrayList<Chunk>();
     boolean rightLoaded = false;
     boolean topLoaded = false;
-    System.out.println(position);
     if ((position.x >= 0 && position.x % CHUNK_SIZE_X < CHUNK_SIZE_X / 2F) || (position.x < 0 && Math.abs(position.x % CHUNK_SIZE_X) >= CHUNK_SIZE_X / 2F)) { // Load the left one
-      System.out.println("Left loaded");
       if (chunkIndex - 1 >= 0)
         chunksToCheck.add(chunks[chunkIndex - 1]);
     } else { // Load the right one
-      System.out.println("Right loaded");
       rightLoaded = true;
       if (chunkIndex + 1 < chunks.length)
         chunksToCheck.add(chunks[chunkIndex + 1]);
     }
     if ((position.z >= 0 && position.z % CHUNK_SIZE_Z < CHUNK_SIZE_Z / 2F) || (position.z < 0 && Math.abs(position.z % CHUNK_SIZE_Z) >= CHUNK_SIZE_X / 2F)) {
-      System.out.println("Bottom loaded");
       if (chunkIndex - chunksPerRow >= 0)
         chunksToCheck.add(chunks[chunkIndex - chunksPerRow]);
     } else {
-      System.out.println("Top loaded");
       topLoaded = true;
       if (chunkIndex + chunksPerRow < chunks.length)
         chunksToCheck.add(chunks[chunkIndex + chunksPerRow]);
