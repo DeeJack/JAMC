@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WorldRenderableProvider implements RenderableProvider {
+  public static int CHUNKS_TO_RENDER = 9;
+
   private final static int CHUNK_SIZE_X = 16;
   private final static int CHUNK_SIZE_Y = 256;
   private final static int CHUNK_SIZE_Z = 16;
@@ -99,9 +101,7 @@ public class WorldRenderableProvider implements RenderableProvider {
 
     this.materials = new Material[chunksCount];
     for (int chunk = 0; chunk < chunks.length; chunk++) {
-      //for (int block = 0; block < this.chunks[chunk].getBlocks().length; block++) {
       materials[chunk] = new Material(new TextureAttribute(TextureAttribute.Diffuse, fullTexture));
-      //}
       /*materials[i] = new Material(new ColorAttribute(ColorAttribute.Diffuse, MathUtils.random(0.5f, 1f), MathUtils.random(
               0.5f, 1f), MathUtils.random(0.5f, 1f), 1));*/
     }
@@ -120,8 +120,6 @@ public class WorldRenderableProvider implements RenderableProvider {
     int rowIndex = (int) Math.ceil((z + minAddingValueZ) / CHUNK_SIZE_Z) + (int) Math.floor(chunksPerRow / 2F) - 1;
     int colIndex = (int) (Math.ceil((x + minAddingValueX) / CHUNK_SIZE_X) + (int) Math.floor(chunksPerRow / 2F) - 1);
     return (rowIndex * chunksPerRow) + colIndex;
-    /*return (MathUtils.ceil((x / (float) CHUNK_SIZE_X) +
-            MathUtils.ceil((z / (float) CHUNK_SIZE_Z)) * chunksPerRow)) + chunksPerRow + 1;*/
   }
 
   public void placeBlock(int x, int y, int z, Block block) {
@@ -199,7 +197,8 @@ public class WorldRenderableProvider implements RenderableProvider {
   @Override
   public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
     lastRenderedChunks = 0;
-    for (int i = 0; i < chunks.length; i++) {
+    // TODO: load chunks from the current chunk to the others
+    for (int i = 0; i < Math.min(chunks.length, CHUNKS_TO_RENDER); i++) {
       var chunk = chunks[i];
       var mesh = meshes[i];
 

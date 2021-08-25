@@ -5,25 +5,31 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import me.deejack.jamc.JAMC;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.rendering.WorldRenderableProvider;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
 
 public class SettingsPage implements Screen {
   private final Stage stage = new Stage();
   private final Table table = new Table();
+  private final Color backgroundColor = Color.GRAY;
   private final Player player;
   private final Music music;
   private boolean opened = false;
-  private List<Widget> widgets = new ArrayList<>();
 
   public SettingsPage(Player player, Music music) {
     this.player = player;
@@ -31,19 +37,20 @@ public class SettingsPage implements Screen {
     Skin skin = new Skin(Gdx.files.internal("data/uiskin.json"));
     var fovValue = ((PerspectiveCamera) player.getCamera()).fieldOfView;
 
-    /*
-    Container<Slider> container = new Container<>(slider);
-    container.setTransform(true);   // for enabling scaling and rotation
-    container.size(100, 60);
-    container.setOrigin(container.getWidth() / 2, container.getHeight() / 2);
-    container.setPosition(200, 200);
-    container.setScale(3);  //scale according to your requirement*/
+    table.setSize(700, 500);
+    table.pad(10F);
+
+    var bgPixmap = new Pixmap((int) table.getWidth(), (int) table.getHeight(), Pixmap.Format.RGBA4444);
+    backgroundColor.a = 0.8F;
+    bgPixmap.setColor(backgroundColor);
+    bgPixmap.fill();
+    var textureRegionDrawableBg = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
+    table.setBackground(textureRegionDrawableBg);
     table.setColor(Color.GRAY);
 
     table.align(Align.top);
     table.setTransform(true);
     table.center();
-    table.setSize(500, 500);
     //table.setDebug(true);
     table.setPosition((Gdx.graphics.getWidth() / 2F) - (table.getWidth() / 2F), (Gdx.graphics.getHeight() / 2F) - (table.getHeight() / 2F));
 
@@ -64,6 +71,7 @@ public class SettingsPage implements Screen {
     table.align(Align.topLeft);
     createSlider(skin, 10, 0, 10, "Chunks to render", (event, actor) -> {
       System.out.println("Render " + ((Slider) actor).getValue() + " chunks");
+      WorldRenderableProvider.CHUNKS_TO_RENDER = (int) ((Slider) actor).getValue();
     });
     table.add(new Label("New line", skin));
   }
@@ -86,7 +94,6 @@ public class SettingsPage implements Screen {
   }
 
   public void render() {
-    //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
     stage.draw();
   }
