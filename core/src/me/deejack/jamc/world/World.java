@@ -62,12 +62,12 @@ public class World {
       }
     }*/
 
-    testWorld = new WorldRenderableProvider(tiles, fullTexture, 9);
+    testWorld = new WorldRenderableProvider(player, 121);
     // TODO: fill chunk method
     testWorld.fillChunk(0, Blocks.GRASS);
     Random random = new Random();
 
-    for (int i = 1; i < 9; i++) {
+    for (int i = 1; i < 121; i++) {
       Blocks blockType = Blocks.values()[random.nextInt(Blocks.values().length)];
       testWorld.fillChunk(i, blockType);
     }

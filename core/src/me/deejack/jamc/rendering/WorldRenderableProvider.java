@@ -2,9 +2,7 @@ package me.deejack.jamc.rendering;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
@@ -14,6 +12,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import me.deejack.jamc.JAMC;
+import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.textures.TextureCache;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.Blocks;
 import me.deejack.jamc.world.World;
@@ -22,11 +22,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WorldRenderableProvider implements RenderableProvider {
-  public static int CHUNKS_TO_RENDER = 9;
-
   private final static int CHUNK_SIZE_X = 16;
   private final static int CHUNK_SIZE_Y = 256;
   private final static int CHUNK_SIZE_Z = 16;
+  public static int CHUNKS_TO_RENDER = 9;
   public static boolean SHOW_BOUNDING_BOXES = false;
   /**
    * The chunks currently in memory
@@ -43,10 +42,9 @@ public class WorldRenderableProvider implements RenderableProvider {
    */
   private final Mesh[] meshes;
 
-  /**
-   * Only for testing, I need to use the textures
-   */
   private final Material[] materials;
+
+  private final Player player;
 
   /**
    * Whether the vertices of the chunks needs to be calculated again
@@ -60,10 +58,10 @@ public class WorldRenderableProvider implements RenderableProvider {
   /**
    * Create the world
    *
-   * @param tiles       The textures to be used
    * @param chunksCount The number of chunks
    */
-  public WorldRenderableProvider(TextureRegion[][] tiles, Texture fullTexture, int chunksCount) {
+  public WorldRenderableProvider(Player player, int chunksCount) {
+    this.player = player;
     var chunksCountPerRow = Math.sqrt(chunksCount); // Chunks on X and Z
     if (chunksCountPerRow != (int) chunksCountPerRow)
       throw new IllegalArgumentException("Chunk's num not power of 2");
@@ -101,7 +99,7 @@ public class WorldRenderableProvider implements RenderableProvider {
 
     this.materials = new Material[chunksCount];
     for (int chunk = 0; chunk < chunks.length; chunk++) {
-      materials[chunk] = new Material(new TextureAttribute(TextureAttribute.Diffuse, fullTexture));
+      materials[chunk] = new Material(new TextureAttribute(TextureAttribute.Diffuse, TextureCache.getFullTexture()));
       /*materials[i] = new Material(new ColorAttribute(ColorAttribute.Diffuse, MathUtils.random(0.5f, 1f), MathUtils.random(
               0.5f, 1f), MathUtils.random(0.5f, 1f), 1));*/
     }
@@ -158,10 +156,12 @@ public class WorldRenderableProvider implements RenderableProvider {
       if (chunkIndex + 1 < chunks.length)
         chunksToCheck.add(chunks[chunkIndex + 1]);
     }
-    if ((position.z >= 0 && position.z % CHUNK_SIZE_Z < CHUNK_SIZE_Z / 2F) || (position.z < 0 && Math.abs(position.z % CHUNK_SIZE_Z) >= CHUNK_SIZE_X / 2F)) {
+    // Load the bottom one
+    if ((position.z >= 0 && position.z % CHUNK_SIZE_Z < CHUNK_SIZE_Z / 2F) ||
+            (position.z < 0 && Math.abs(position.z % CHUNK_SIZE_Z) >= CHUNK_SIZE_X / 2F)) {
       if (chunkIndex - chunksPerRow >= 0)
         chunksToCheck.add(chunks[chunkIndex - chunksPerRow]);
-    } else {
+    } else { // Load the top one
       topLoaded = true;
       if (chunkIndex + chunksPerRow < chunks.length)
         chunksToCheck.add(chunks[chunkIndex + chunksPerRow]);
@@ -190,15 +190,49 @@ public class WorldRenderableProvider implements RenderableProvider {
             .collect(Collectors.toList());
   }
 
-  private List<Chunk> getAdiacentChunks(int chunkIndex) {
-    return null;
-  }
-
   @Override
   public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
     lastRenderedChunks = 0;
     // TODO: load chunks from the current chunk to the others
-    for (int i = 0; i < Math.min(chunks.length, CHUNKS_TO_RENDER); i++) {
+    int currentChunkIndex = getChunkIndex(player.getPosition().x, player.getPosition().z);
+    var chunksToRender = new ArrayList<Integer>();
+
+    int chunkToLoad = currentChunkIndex - (chunksPerRow * (CHUNKS_TO_RENDER - 2)) - (int) Math.floor(CHUNKS_TO_RENDER / 2F); // Starting with the one on the left of the top one
+    int chunksLoaded = 0;
+    for (int row = CHUNKS_TO_RENDER - 2; chunksLoaded < CHUNKS_TO_RENDER * CHUNKS_TO_RENDER; chunksLoaded++) {
+      if (chunkToLoad >= 0 && chunkToLoad < chunks.length) {
+        chunksToRender.add(chunkToLoad);
+      }
+      chunkToLoad++;
+      if (chunkToLoad == currentChunkIndex - (chunksPerRow * row) + Math.ceil(CHUNKS_TO_RENDER / 2F)) {
+        chunkToLoad = currentChunkIndex - (chunksPerRow * (row - 1)) - (int) Math.floor(CHUNKS_TO_RENDER / 2F);
+        row--;
+      }
+    }
+
+    for (var chunkIndex : chunksToRender) {
+      var chunk = chunks[chunkIndex];
+      var mesh = meshes[chunkIndex];
+
+      if (dirty[chunkIndex]) { // If the vertices needs to be updated
+        var numVertices = chunk.calculateVertices();
+        //numVertices = (numVertices / 4 * 6); // Num of indices
+        numOfIndices[chunkIndex] = numVertices / 4 * 6;
+        mesh.setVertices(chunk.getVertexes(), 0, numVertices * 6); // ???
+        dirty[chunkIndex] = false;
+      }
+
+      Renderable renderable = pool.obtain();
+      renderable.material = materials[chunkIndex];
+      renderable.meshPart.mesh = mesh;
+      renderable.meshPart.offset = 0;
+      renderable.meshPart.size = numOfIndices[chunkIndex];
+      renderable.meshPart.primitiveType = GL20.GL_TRIANGLES;
+      renderables.add(renderable);
+      lastRenderedChunks++;
+    }
+/*
+    for (int i = 0; i < chunks.length; i++) {
       var chunk = chunks[i];
       var mesh = meshes[i];
 
@@ -218,7 +252,7 @@ public class WorldRenderableProvider implements RenderableProvider {
       renderable.meshPart.primitiveType = GL20.GL_TRIANGLES;
       renderables.add(renderable);
       lastRenderedChunks++;
-    }
+    }*/
 
     if (JAMC.DEBUG)
       System.out.println("Render " + lastRenderedChunks + " chunks");
