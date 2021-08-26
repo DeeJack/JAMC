@@ -131,7 +131,7 @@ public class PlayerMovementProcessor implements InputProcessor {
       switch (keyCode) {
         case Keys.A -> {
           var direction = player.getDirection().cpy();
-          var horizontal = direction.crs(camera.up);
+          var horizontal = direction.crs(camera.up).nor();
           horizontal.scl(-movementSpeed * gameDeltaTime, 0F, -movementSpeed * gameDeltaTime);
 
           finalPosition.set(camera.position.cpy().add(horizontal).add(0, 0.5F, 0));
@@ -139,7 +139,7 @@ public class PlayerMovementProcessor implements InputProcessor {
         }
         case Keys.D -> {
           var direction = player.getDirection().cpy();
-          var horizontal = direction.crs(camera.up);
+          var horizontal = direction.crs(camera.up).nor();
           horizontal.scl(movementSpeed * gameDeltaTime, 0F, movementSpeed * gameDeltaTime);
 
           finalPosition.set(camera.position.cpy().add(horizontal).add(0, 0.5F, 0));
@@ -207,7 +207,7 @@ public class PlayerMovementProcessor implements InputProcessor {
 
     @Override
     public void run() {
-      Vector3 direction = new Vector3(0, 10, 0);
+      Vector3 direction = new Vector3(0, World.BLOCK_DISTANCE, 0);
       final var finalPosition = camera.position.cpy().add(direction);
       player.setJumping(true);
       //var initialPosition = camera.position.cpy();
@@ -226,7 +226,7 @@ public class PlayerMovementProcessor implements InputProcessor {
         }
       }
       try {
-        Thread.sleep(30);
+        Thread.sleep(100);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }

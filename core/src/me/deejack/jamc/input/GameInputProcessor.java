@@ -120,6 +120,8 @@ public class GameInputProcessor implements InputProcessor {
       var targetBlock = world.getBlock(nextCoords);
       if (targetBlock != null) // A block is already present in the coordinates
         return false;
+      if (world.checkCollision(player.getPosition().scl(World.BLOCK_DISTANCE), nextCoords.cpy().scl(World.BLOCK_DISTANCE)))
+        return false;
 
       var currentItem = player.getInventory().getSelectedItem();
       if (currentItem != null) {

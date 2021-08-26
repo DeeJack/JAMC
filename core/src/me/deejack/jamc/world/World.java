@@ -132,11 +132,11 @@ public class World {
 
   public boolean checkCollision(Vector3 playerPosition, Vector3 targetPosition) {
     var playerBounds = new BoundingBox();
-    playerBounds.set(new Vector3(-1.5F, -8, -1.5F), new Vector3(1.5F, 0, 1.5F)); // TODO: do this only one time on the creation of the player!
+    playerBounds.set(new Vector3(-1.5F, -8, -1.5F), new Vector3(1.5F, 1, 1.5F)); // TODO: do this only one time on the creation of the player!
     playerBounds.mul(new Matrix4().setToTranslation(playerPosition));
 
     var blockBounds = new BoundingBox();
-    blockBounds.set(new Vector3(-2, -2, 2), new Vector3(2, 2, -2));
+    blockBounds.set(new Vector3(0, 0, 0), new Vector3(4, 4, 4));
     blockBounds.mul(new Matrix4().setToTranslation(targetPosition));
 
     return playerBounds.intersects(blockBounds);
