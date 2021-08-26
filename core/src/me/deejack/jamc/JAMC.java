@@ -67,7 +67,10 @@ public class JAMC implements ApplicationListener {
     // one behind!
     //Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
     //Gdx.gl20.glCullFace(GL20.GL_BACK);
-    Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
+    //Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
+
+    Gdx.gl20.glEnable(Gdx.gl20.GL_CULL_FACE);
+    Gdx.gl20.glCullFace(Gdx.gl20.GL_BACK);
     // By changing the front face it's possible to see that it's actually working,
     // as only the back would be loaded using the code in the line after this
     // Gdx.gl20.glFrontFace(GL20.GL_CW);

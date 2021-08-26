@@ -81,13 +81,14 @@ public class WorldRenderableProvider implements RenderableProvider {
     // Chunk.VERTEXES_PER_FACE because only 4 vertices are required, but 2 of them needs to be used 2 times
     this.indices = new short[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * (Chunk.VERTEXES_PER_FACE + 2) * Chunk.CUBE_FACES];
     int currentOffset = 0;
-    for (int i = 0; i < indices.length; i += 6, currentOffset += 4) {
-      indices[i] = (short) currentOffset; // Top left corner
-      indices[i + 1] = (short) (currentOffset + 1); // Bottom left corner
-      indices[i + 2] = (short) (currentOffset + 2); // Bottom right corner
-      indices[i + 3] = (short) (currentOffset + 2); // Bottom right corner
-      indices[i + 4] = (short) (currentOffset + 3); // Top right corner
-      indices[i + 5] = (short) (currentOffset); // Top left corner
+    for (int i = 0; i < indices.length; currentOffset += 4) {//i += 6,
+      indices[i++] = (short) currentOffset; // Top left corner
+      indices[i++] = (short) (currentOffset + 1); // Bottom left corner
+      indices[i++] = (short) (currentOffset + 2); // Bottom right corner
+
+      indices[i++] = (short) (currentOffset + 2); // Bottom right corner
+      indices[i++] = (short) (currentOffset + 3); // Top right corner
+      indices[i++] = (short) (currentOffset + 0); // Top left corner
     }
 
     this.meshes = new Mesh[chunksCount];

@@ -122,16 +122,16 @@ public class Chunk {
 
   public int createLeftFace(int x, int y, int z, int currentOffset, Block block) {
     var texture = block.getLeftTexture();
-    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y + World.BLOCK_DISTANCE, offset.z + z + World.BLOCK_DISTANCE); // Top left vertex (of the right face)
+    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y + World.BLOCK_DISTANCE, offset.z + z); // Top left vertex (of the right face)
     vertexes[currentOffset++] = new Vector3(-1, 0, 0); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU(), texture.getV(), Integer.MIN_VALUE); // Texture coords
-    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y, offset.z + z + World.BLOCK_DISTANCE); // Bottom left vertex
+    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y, offset.z + z); // Bottom left vertex
     vertexes[currentOffset++] = new Vector3(-1, 0, 0); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU(), texture.getV2(), Integer.MIN_VALUE); // Texture coords
-    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y, offset.z + z); // Bottom right vertex
+    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y, offset.z + z + World.BLOCK_DISTANCE); // Bottom right vertex
     vertexes[currentOffset++] = new Vector3(-1, 0, 0); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU2(), texture.getV2(), Integer.MIN_VALUE); // Texture coords
-    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y + World.BLOCK_DISTANCE, offset.z + z); // Top right vertex
+    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y + World.BLOCK_DISTANCE, offset.z + z + World.BLOCK_DISTANCE); // Top right vertex
     vertexes[currentOffset++] = new Vector3(-1, 0, 0); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU2(), texture.getV(), Integer.MIN_VALUE); // Texture coords
 
@@ -158,17 +158,17 @@ public class Chunk {
 
   public int createFrontFace(int x, int y, int z, int currentOffset, Block block) {
     var texture = block.getFrontTexture();
-    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y + World.BLOCK_DISTANCE, offset.z + z); // Top left vertex (of the front face)
-    vertexes[currentOffset++] = new Vector3(0, 0, 1); // Normal
+    vertexes[currentOffset++] = new Vector3(offset.x + x + World.BLOCK_DISTANCE, offset.y + y + World.BLOCK_DISTANCE, offset.z + z); // Top left vertex (of the front face)
+    vertexes[currentOffset++] = new Vector3(0, 0, -1); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU(), texture.getV(), Integer.MIN_VALUE); // Texture coords
-    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y, offset.z + z); // Bottom left vertex
-    vertexes[currentOffset++] = new Vector3(0, 0, 1); // Normal
+    vertexes[currentOffset++] = new Vector3(offset.x + x + World.BLOCK_DISTANCE, offset.y + y, offset.z + z); // Bottom left vertex
+    vertexes[currentOffset++] = new Vector3(0, 0, -1); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU(), texture.getV2(), Integer.MIN_VALUE); // Texture coords
-    vertexes[currentOffset++] = new Vector3(offset.x + x + World.BLOCK_DISTANCE, offset.y + y, offset.z + z); // Bottom right vertex
-    vertexes[currentOffset++] = new Vector3(0, 0, 1); // Normal
+    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y, offset.z + z); // Bottom right vertex
+    vertexes[currentOffset++] = new Vector3(0, 0, -1); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU2(), texture.getV2(), Integer.MIN_VALUE); // Texture coords
-    vertexes[currentOffset++] = new Vector3(offset.x + x + World.BLOCK_DISTANCE, offset.y + y + World.BLOCK_DISTANCE, offset.z + z); // Top right vertex
-    vertexes[currentOffset++] = new Vector3(0, 0, 1); // Normal
+    vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y + World.BLOCK_DISTANCE, offset.z + z); // Top right vertex
+    vertexes[currentOffset++] = new Vector3(0, 0, -1); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU2(), texture.getV(), Integer.MIN_VALUE); // Texture coords
 
     return currentOffset;
@@ -177,16 +177,16 @@ public class Chunk {
   public int createBackFace(int x, int y, int z, int currentOffset, Block block) {
     var texture = block.getBackTexture();
     vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y + World.BLOCK_DISTANCE, offset.z + z + World.BLOCK_DISTANCE); // Top left vertex (of the front face)
-    vertexes[currentOffset++] = new Vector3(0, 0, -1); // Normal
+    vertexes[currentOffset++] = new Vector3(0, 0, 1); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU(), texture.getV(), Integer.MIN_VALUE); // Texture coords
     vertexes[currentOffset++] = new Vector3(offset.x + x, offset.y + y, offset.z + z + World.BLOCK_DISTANCE); // Bottom left vertex
-    vertexes[currentOffset++] = new Vector3(0, 0, -1); // Normal
+    vertexes[currentOffset++] = new Vector3(0, 0, 1); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU(), texture.getV2(), Integer.MIN_VALUE); // Texture coords
     vertexes[currentOffset++] = new Vector3(offset.x + x + World.BLOCK_DISTANCE, offset.y + y, offset.z + z + World.BLOCK_DISTANCE); // Bottom right vertex
-    vertexes[currentOffset++] = new Vector3(0, 0, -1); // Normal
+    vertexes[currentOffset++] = new Vector3(0, 0, 1); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU2(), texture.getV2(), Integer.MIN_VALUE); // Texture coords
     vertexes[currentOffset++] = new Vector3(offset.x + x + World.BLOCK_DISTANCE, offset.y + y + World.BLOCK_DISTANCE, offset.z + z + World.BLOCK_DISTANCE); // Top right vertex
-    vertexes[currentOffset++] = new Vector3(0, 0, -1); // Normal
+    vertexes[currentOffset++] = new Vector3(0, 0, 1); // Normal
     vertexes[currentOffset++] = new Vector3(texture.getU2(), texture.getV(), Integer.MIN_VALUE); // Texture coords
 
     return currentOffset;

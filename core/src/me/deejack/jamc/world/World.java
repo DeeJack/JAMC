@@ -42,7 +42,7 @@ public class World {
 
   public void create() {
     DefaultShader.Config config = new DefaultShader.Config();
-    config.defaultCullFace = 0;
+    //config.defaultCullFace = 0;
 
     //batch = new ModelBatch(Gdx.files.internal("shaders/vertex.glsl"), Gdx.files.internal("shaders/frag.glsl"));
     batch = new ModelBatch(new DefaultShaderProvider(config));
