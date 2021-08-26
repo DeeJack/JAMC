@@ -72,7 +72,6 @@ public enum Blocks {
               tiles[leftTextureId / TEXTURE_PER_ROW][leftTextureId % TEXTURE_PER_ROW], tiles[rightTextureId / TEXTURE_PER_ROW][rightTextureId % TEXTURE_PER_ROW],
               tiles[frontTextureId / TEXTURE_PER_ROW][frontTextureId % TEXTURE_PER_ROW], tiles[backTextureId / TEXTURE_PER_ROW][backTextureId % TEXTURE_PER_ROW]);
     }
-    System.out.println("Creating model");
     int attributes = Usage.Position | Usage.Normal | Usage.TextureCoordinates;
     var modelBuilder = new ModelBuilder();
     modelBuilder.begin();

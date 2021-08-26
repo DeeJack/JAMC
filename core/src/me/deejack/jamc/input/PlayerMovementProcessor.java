@@ -230,7 +230,6 @@ public class PlayerMovementProcessor implements InputProcessor {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      System.out.println("Jump complete");
       player.setJumping(false);
     }
   }

@@ -70,7 +70,6 @@ public class SettingsPage implements Screen {
     table.row();
     table.align(Align.topLeft);
     createSlider(skin, 10, 0, 10, "Chunks to render", (event, actor) -> {
-      System.out.println("Render " + ((Slider) actor).getValue() + " chunks");
       WorldRenderableProvider.CHUNKS_TO_RENDER = (int) ((Slider) actor).getValue();
     });
     table.add(new Label("New line", skin));

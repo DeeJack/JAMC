@@ -1,8 +1,6 @@
 package me.deejack.jamc.world;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -23,8 +21,6 @@ import java.util.Random;
 
 public class World {
   public static final int BLOCK_DISTANCE = 4;
-  private final TextureRegion[][] tiles;
-  private final Texture fullTexture;
   private final Player player;
   private final Array<Entity> entities = new Array<>();
   public boolean collision = false;
@@ -33,11 +29,9 @@ public class World {
   private WorldRenderableProvider testWorld;
   private int lastCollisionCheck = 0;
 
-  public World(Player player, TextureRegion[][] tiles, Texture fullTexture) {
+  public World(Player player) {
     this.player = player;
     entities.add(player);
-    this.tiles = tiles;
-    this.fullTexture = fullTexture;
   }
 
   public void create() {

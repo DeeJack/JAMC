@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.events.EventHandler;
+import me.deejack.jamc.events.TestEvent;
 import me.deejack.jamc.hud.Hud;
 import me.deejack.jamc.hud.InventoryHud;
 import me.deejack.jamc.hud.UserInterface;
@@ -16,7 +18,6 @@ import me.deejack.jamc.hud.settings.SettingsPage;
 import me.deejack.jamc.hud.utils.DebugHud;
 import me.deejack.jamc.input.*;
 import me.deejack.jamc.items.Items;
-import me.deejack.jamc.textures.TextureCache;
 import me.deejack.jamc.world.World;
 
 public class JAMC implements ApplicationListener {
@@ -54,7 +55,7 @@ public class JAMC implements ApplicationListener {
       currentPlayer.getInventory().addItem(itemType.createItem(), index--);
     }
 
-    world = new World(currentPlayer, TextureCache.getTiles(), TextureCache.getFullTexture()); // Create the world
+    world = new World(currentPlayer); // Create the world
     world.create();
 
     hud = new Hud(new InventoryHud(currentPlayer.getInventory())); // Initialize the hud (crosshair, fps counter etc.)
@@ -97,7 +98,7 @@ public class JAMC implements ApplicationListener {
     profiler = new GLProfiler(Gdx.graphics);
     profiler.enable();
 
-    //EventHandler.registerEvent(new TestEvent());
+    EventHandler.registerEvent(new TestEvent());
     music.setVolume(MASTER_VOLUME / 100F);
     music.play();
   }

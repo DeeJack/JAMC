@@ -142,7 +142,6 @@ public class WorldRenderableProvider implements RenderableProvider {
 
   public List<Block> getNearBlocks(Vector3 position, int distance) {
     int chunkIndex = getChunkIndex(position.x, position.z);
-    System.out.println(chunkIndex);
     if (chunkIndex < 0 || chunkIndex >= chunks.length)
       return new ArrayList<>();
 
@@ -270,8 +269,6 @@ public class WorldRenderableProvider implements RenderableProvider {
 
   public Block getBlock(int x, int y, int z) {
     int chunkIndex = getChunkIndex(x, z);
-    if (chunkIndex != 0)
-      System.out.println("Chunk: " + chunkIndex);
     // I have to flip the axis if they are negative because... Otherwise it doesn't work
     if (x < 0)
       x = CHUNK_SIZE_X - (-x % CHUNK_SIZE_X);
@@ -287,7 +284,6 @@ public class WorldRenderableProvider implements RenderableProvider {
         for (int y = 0; y < 6; y++) {
           chunk.set(x, y, z, blockType.createBlock(x + chunk.getOffset().x / World.BLOCK_DISTANCE, y,
                   z + chunk.getOffset().z / World.BLOCK_DISTANCE));
-          System.out.println("X: " + (x + chunk.getOffset().x / World.BLOCK_DISTANCE) + ", z: " + (z + chunk.getOffset().z / World.BLOCK_DISTANCE));
         }
       }
     }
