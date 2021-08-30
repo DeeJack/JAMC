@@ -1,8 +1,6 @@
 package me.deejack.jamc.world;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -23,26 +21,24 @@ import java.util.Random;
 
 public class World {
   public static final int BLOCK_DISTANCE = 4;
-  private final TextureRegion[][] tiles;
-  private final Texture fullTexture;
   private final Player player;
   private final Array<Entity> entities = new Array<>();
+  private final String name;
   public boolean collision = false;
   private Environment environment;
   private ModelBatch batch;
   private WorldRenderableProvider testWorld;
   private int lastCollisionCheck = 0;
 
-  public World(Player player, TextureRegion[][] tiles, Texture fullTexture) {
+  public World(String name, Player player) {
+    this.name = name;
     this.player = player;
     entities.add(player);
-    this.tiles = tiles;
-    this.fullTexture = fullTexture;
   }
 
   public void create() {
     DefaultShader.Config config = new DefaultShader.Config();
-    config.defaultCullFace = 0;
+    //config.defaultCullFace = 0;
 
     //batch = new ModelBatch(Gdx.files.internal("shaders/vertex.glsl"), Gdx.files.internal("shaders/frag.glsl"));
     batch = new ModelBatch(new DefaultShaderProvider(config));
@@ -62,12 +58,12 @@ public class World {
       }
     }*/
 
-    testWorld = new WorldRenderableProvider(tiles, fullTexture, 9);
+    testWorld = new WorldRenderableProvider(player, 121);
     // TODO: fill chunk method
     testWorld.fillChunk(0, Blocks.GRASS);
     Random random = new Random();
 
-    for (int i = 1; i < 9; i++) {
+    for (int i = 1; i < 121; i++) {
       Blocks blockType = Blocks.values()[random.nextInt(Blocks.values().length)];
       testWorld.fillChunk(i, blockType);
     }
@@ -132,11 +128,11 @@ public class World {
 
   public boolean checkCollision(Vector3 playerPosition, Vector3 targetPosition) {
     var playerBounds = new BoundingBox();
-    playerBounds.set(new Vector3(-1.5F, -8, -1.5F), new Vector3(1.5F, 0, 1.5F)); // TODO: do this only one time on the creation of the player!
+    playerBounds.set(new Vector3(-1.5F, -8, -1.5F), new Vector3(1.5F, 1, 1.5F)); // TODO: do this only one time on the creation of the player!
     playerBounds.mul(new Matrix4().setToTranslation(playerPosition));
 
     var blockBounds = new BoundingBox();
-    blockBounds.set(new Vector3(-2, -2, 2), new Vector3(2, 2, -2));
+    blockBounds.set(new Vector3(0, 0, 0), new Vector3(4, 4, 4));
     blockBounds.mul(new Matrix4().setToTranslation(targetPosition));
 
     return playerBounds.intersects(blockBounds);
@@ -184,5 +180,9 @@ public class World {
 
   public Block getBlock(Vector3 coordinates) {
     return testWorld.getBlock((int) coordinates.x, (int) coordinates.y, (int) coordinates.z);
+  }
+
+  public String getName() {
+    return name;
   }
 }

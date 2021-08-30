@@ -10,6 +10,7 @@ import me.deejack.jamc.events.EventHandler;
 import me.deejack.jamc.events.EventType;
 import me.deejack.jamc.events.presets.MouseEvent;
 import me.deejack.jamc.events.presets.PlayerEvent;
+import me.deejack.jamc.utils.WorldUtils;
 import me.deejack.jamc.world.World;
 
 import java.util.HashSet;
@@ -131,7 +132,7 @@ public class PlayerMovementProcessor implements InputProcessor {
       switch (keyCode) {
         case Keys.A -> {
           var direction = player.getDirection().cpy();
-          var horizontal = direction.crs(camera.up);
+          var horizontal = direction.crs(camera.up).nor();
           horizontal.scl(-movementSpeed * gameDeltaTime, 0F, -movementSpeed * gameDeltaTime);
 
           finalPosition.set(camera.position.cpy().add(horizontal).add(0, 0.5F, 0));
@@ -139,7 +140,7 @@ public class PlayerMovementProcessor implements InputProcessor {
         }
         case Keys.D -> {
           var direction = player.getDirection().cpy();
-          var horizontal = direction.crs(camera.up);
+          var horizontal = direction.crs(camera.up).nor();
           horizontal.scl(movementSpeed * gameDeltaTime, 0F, movementSpeed * gameDeltaTime);
 
           finalPosition.set(camera.position.cpy().add(horizontal).add(0, 0.5F, 0));
@@ -184,7 +185,7 @@ public class PlayerMovementProcessor implements InputProcessor {
       if (translationAxis.equals(new Vector3())) // It's not a movement
         continue;
 
-      var eventData = new PlayerEvent.PlayerEventData(finalPosition, player);
+      var eventData = new PlayerEvent.PlayerEventData(WorldUtils.toBlockCoordinates(finalPosition), player);
       EventHandler.call(EventType.EventTypes.PLAYER_MOVE, eventData);
       if (eventData.isCancelled())
         continue;
@@ -207,7 +208,7 @@ public class PlayerMovementProcessor implements InputProcessor {
 
     @Override
     public void run() {
-      Vector3 direction = new Vector3(0, 10, 0);
+      Vector3 direction = new Vector3(0, World.BLOCK_DISTANCE, 0);
       final var finalPosition = camera.position.cpy().add(direction);
       player.setJumping(true);
       //var initialPosition = camera.position.cpy();
@@ -226,11 +227,10 @@ public class PlayerMovementProcessor implements InputProcessor {
         }
       }
       try {
-        Thread.sleep(30);
+        Thread.sleep(100);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      System.out.println("Jump complete");
       player.setJumping(false);
     }
   }

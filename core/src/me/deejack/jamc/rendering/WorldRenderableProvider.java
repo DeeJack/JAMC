@@ -2,18 +2,19 @@ package me.deejack.jamc.rendering;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import me.deejack.jamc.JAMC;
+import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.textures.TextureCache;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.Blocks;
 import me.deejack.jamc.world.World;
@@ -23,28 +24,22 @@ import java.util.stream.Collectors;
 
 public class WorldRenderableProvider implements RenderableProvider {
   private final static int CHUNK_SIZE_X = 16;
-  private final static int CHUNK_SIZE_Y = 256;
+  private final static int CHUNK_SIZE_Y = 128;
   private final static int CHUNK_SIZE_Z = 16;
-  public static boolean SHOW_BOUNDING_BOXES = false;
+  public static int CHUNKS_TO_RENDER = 9;
   /**
    * The chunks currently in memory
    */
   private final Chunk[] chunks;
 
   /**
-   * The indices to draw the faces of the cubes in the chunks
-   */
-  private final short[] indices;
-
-  /**
    * The meshes, one per chunk
    */
   private final Mesh[] meshes;
 
-  /**
-   * Only for testing, I need to use the textures
-   */
-  private final Material[] materials;
+  private final Material material;
+
+  private final Player player;
 
   /**
    * Whether the vertices of the chunks needs to be calculated again
@@ -52,19 +47,18 @@ public class WorldRenderableProvider implements RenderableProvider {
   private final boolean[] dirty;
   private final int[] numOfIndices;
   private final int chunksPerRow;
-  private final int chunkOffset = 0;
   private int lastRenderedChunks = 0;
 
   /**
    * Create the world
    *
-   * @param tiles       The textures to be used
    * @param chunksCount The number of chunks
    */
-  public WorldRenderableProvider(TextureRegion[][] tiles, Texture fullTexture, int chunksCount) {
+  public WorldRenderableProvider(Player player, int chunksCount) {
+    this.player = player;
     var chunksCountPerRow = Math.sqrt(chunksCount); // Chunks on X and Z
     if (chunksCountPerRow != (int) chunksCountPerRow)
-      throw new IllegalArgumentException("Chunk's num not power of 2");
+      throw new IllegalArgumentException("The number of chunks is not power of 2");
 
     this.chunks = new Chunk[chunksCount];
     this.chunksPerRow = (int) chunksCountPerRow;
@@ -74,20 +68,25 @@ public class WorldRenderableProvider implements RenderableProvider {
     for (int z = -MathUtils.floor(chunksPerRow / 2F); z < MathUtils.ceil(chunksPerRow / 2F); z++) {
       for (int x = -MathUtils.floor(chunksPerRow / 2F); x < MathUtils.ceil(chunksPerRow / 2F); x++) {
         System.out.println("Origin: " + x * CHUNK_SIZE_X + ", " + z * CHUNK_SIZE_Z);
-        this.chunks[currentChunk++] = new Chunk(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z, x * CHUNK_SIZE_X, 0, z * CHUNK_SIZE_Z);
+        this.chunks[currentChunk] = new Chunk(CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z, x * CHUNK_SIZE_X, 0, z * CHUNK_SIZE_Z);
+        currentChunk++;
       }
     }
 
     // Chunk.VERTEXES_PER_FACE because only 4 vertices are required, but 2 of them needs to be used 2 times
-    this.indices = new short[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * (Chunk.VERTEXES_PER_FACE + 2) * Chunk.CUBE_FACES];
+    /**
+     * The indices to draw the faces of the cubes in the chunks
+     */
+    short[] indices = new short[CHUNK_SIZE_X * CHUNK_SIZE_Y * CHUNK_SIZE_Z * (Chunk.VERTEXES_PER_FACE + 2) * Chunk.CUBE_FACES];
     int currentOffset = 0;
-    for (int i = 0; i < indices.length; i += 6, currentOffset += 4) {
-      indices[i] = (short) currentOffset; // Top left corner
-      indices[i + 1] = (short) (currentOffset + 1); // Bottom left corner
-      indices[i + 2] = (short) (currentOffset + 2); // Bottom right corner
-      indices[i + 3] = (short) (currentOffset + 2); // Bottom right corner
-      indices[i + 4] = (short) (currentOffset + 3); // Top right corner
-      indices[i + 5] = (short) (currentOffset); // Top left corner
+    for (int i = 0; i < indices.length; currentOffset += 4) {//i += 6,
+      indices[i++] = (short) currentOffset; // Top left corner
+      indices[i++] = (short) (currentOffset + 1); // Bottom left corner
+      indices[i++] = (short) (currentOffset + 2); // Bottom right corner
+
+      indices[i++] = (short) (currentOffset + 2); // Bottom right corner
+      indices[i++] = (short) (currentOffset + 3); // Top right corner
+      indices[i++] = (short) (currentOffset + 0); // Top left corner
     }
 
     this.meshes = new Mesh[chunksCount];
@@ -97,14 +96,13 @@ public class WorldRenderableProvider implements RenderableProvider {
       meshes[i].setIndices(indices);
     }
 
-    this.materials = new Material[chunksCount];
-    for (int chunk = 0; chunk < chunks.length; chunk++) {
-      //for (int block = 0; block < this.chunks[chunk].getBlocks().length; block++) {
-      materials[chunk] = new Material(new TextureAttribute(TextureAttribute.Diffuse, fullTexture));
-      //}
+    //this.materials = new Material[chunksCount];
+    //for (int chunk = 0; chunk < chunks.length; chunk++) {
+    //materials[chunk] = new Material(new TextureAttribute(TextureAttribute.Diffuse, TextureCache.getFullTexture()));
       /*materials[i] = new Material(new ColorAttribute(ColorAttribute.Diffuse, MathUtils.random(0.5f, 1f), MathUtils.random(
               0.5f, 1f), MathUtils.random(0.5f, 1f), 1));*/
-    }
+    //}
+    this.material = new Material(new TextureAttribute(TextureAttribute.Diffuse, TextureCache.getFullTexture()));
 
     this.dirty = new boolean[chunksCount];
     Arrays.fill(dirty, true);
@@ -113,15 +111,24 @@ public class WorldRenderableProvider implements RenderableProvider {
     Arrays.fill(numOfIndices, (short) 0);
   }
 
-  private int getChunkIndex(float x, float z) {
+  public int getChunkIndex(float x, float z) {
+    var minAddingValueX = 0.0001F;
+    var minAddingValueZ = 0.0001F;
+    // This whole formula was made with more like a trial-error procedure, so I can't really tell what it does, but it works.
+    int rowIndex = (int) Math.ceil((z + minAddingValueZ) / CHUNK_SIZE_Z) + (int) Math.floor(chunksPerRow / 2F) - 1;
+    rowIndex %= 16;
+    int colIndex = (int) (Math.ceil((x + minAddingValueX) / CHUNK_SIZE_X) + (int) Math.floor(chunksPerRow / 2F) - 1);
+    colIndex %= 16;
+    return (rowIndex * chunksPerRow) + colIndex;
+  }
+
+  private Vector2 getChunkCoordinates(float x, float z) {
     var minAddingValueX = 0.0001F;
     var minAddingValueZ = 0.0001F;
     // This whole formula was made with more like a trial-error procedure, so I can't really tell what it does, but it works.
     int rowIndex = (int) Math.ceil((z + minAddingValueZ) / CHUNK_SIZE_Z) + (int) Math.floor(chunksPerRow / 2F) - 1;
     int colIndex = (int) (Math.ceil((x + minAddingValueX) / CHUNK_SIZE_X) + (int) Math.floor(chunksPerRow / 2F) - 1);
-    return (rowIndex * chunksPerRow) + colIndex;
-    /*return (MathUtils.ceil((x / (float) CHUNK_SIZE_X) +
-            MathUtils.ceil((z / (float) CHUNK_SIZE_Z)) * chunksPerRow)) + chunksPerRow + 1;*/
+    return new Vector2(rowIndex * CHUNK_SIZE_X, colIndex * CHUNK_SIZE_Z);
   }
 
   public void placeBlock(int x, int y, int z, Block block) {
@@ -145,7 +152,6 @@ public class WorldRenderableProvider implements RenderableProvider {
 
   public List<Block> getNearBlocks(Vector3 position, int distance) {
     int chunkIndex = getChunkIndex(position.x, position.z);
-    System.out.println(chunkIndex);
     if (chunkIndex < 0 || chunkIndex >= chunks.length)
       return new ArrayList<>();
 
@@ -160,10 +166,12 @@ public class WorldRenderableProvider implements RenderableProvider {
       if (chunkIndex + 1 < chunks.length)
         chunksToCheck.add(chunks[chunkIndex + 1]);
     }
-    if ((position.z >= 0 && position.z % CHUNK_SIZE_Z < CHUNK_SIZE_Z / 2F) || (position.z < 0 && Math.abs(position.z % CHUNK_SIZE_Z) >= CHUNK_SIZE_X / 2F)) {
+    // Load the bottom one
+    if ((position.z >= 0 && position.z % CHUNK_SIZE_Z < CHUNK_SIZE_Z / 2F) ||
+            (position.z < 0 && Math.abs(position.z % CHUNK_SIZE_Z) >= CHUNK_SIZE_X / 2F)) {
       if (chunkIndex - chunksPerRow >= 0)
         chunksToCheck.add(chunks[chunkIndex - chunksPerRow]);
-    } else {
+    } else { // Load the top one
       topLoaded = true;
       if (chunkIndex + chunksPerRow < chunks.length)
         chunksToCheck.add(chunks[chunkIndex + chunksPerRow]);
@@ -192,13 +200,48 @@ public class WorldRenderableProvider implements RenderableProvider {
             .collect(Collectors.toList());
   }
 
-  private List<Chunk> getAdiacentChunks(int chunkIndex) {
-    return null;
-  }
-
   @Override
   public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
     lastRenderedChunks = 0;
+    // TODO: load chunks from the current chunk to the others
+    /*int currentChunkIndex = getChunkIndex(player.getPosition().x, player.getPosition().z);
+    var chunksToRender = new ArrayList<Integer>();
+
+    int chunkToLoad = currentChunkIndex - (chunksPerRow * (CHUNKS_TO_RENDER - 2)) - (int) Math.floor(CHUNKS_TO_RENDER / 2F); // Starting with the one on the left of the top one
+    int chunksLoaded = 0;
+    for (int row = CHUNKS_TO_RENDER - 2; chunksLoaded < CHUNKS_TO_RENDER * CHUNKS_TO_RENDER; chunksLoaded++) {
+      if (chunkToLoad >= 0 && chunkToLoad < chunks.length) {
+        chunksToRender.add(chunkToLoad);
+      }
+      chunkToLoad++;
+      if (chunkToLoad == currentChunkIndex - (chunksPerRow * row) + Math.ceil(CHUNKS_TO_RENDER / 2F)) {
+        chunkToLoad = currentChunkIndex - (chunksPerRow * (row - 1)) - (int) Math.floor(CHUNKS_TO_RENDER / 2F);
+        row--;
+      }
+    }
+
+    for (var chunkIndex : chunksToRender) {
+      var chunk = chunks[chunkIndex];
+      var mesh = meshes[chunkIndex];
+
+      if (dirty[chunkIndex]) { // If the vertices needs to be updated
+        var numVertices = chunk.calculateVertices();
+        //numVertices = (numVertices / 4 * 6); // Num of indices
+        numOfIndices[chunkIndex] = numVertices / 4 * 6;
+        mesh.setVertices(chunk.getVertexes(), 0, numVertices * 6); // ???
+        dirty[chunkIndex] = false;
+      }
+
+      Renderable renderable = pool.obtain();
+      renderable.material = material;
+      renderable.meshPart.mesh = mesh;
+      renderable.meshPart.offset = 0;
+      renderable.meshPart.size = numOfIndices[chunkIndex];
+      renderable.meshPart.primitiveType = GL20.GL_TRIANGLES;
+      renderables.add(renderable);
+      lastRenderedChunks++;
+    }*/
+
     for (int i = 0; i < chunks.length; i++) {
       var chunk = chunks[i];
       var mesh = meshes[i];
@@ -212,7 +255,7 @@ public class WorldRenderableProvider implements RenderableProvider {
       }
 
       Renderable renderable = pool.obtain();
-      renderable.material = materials[i];
+      renderable.material = material;
       renderable.meshPart.mesh = mesh;
       renderable.meshPart.offset = 0;
       renderable.meshPart.size = numOfIndices[i];
@@ -236,8 +279,6 @@ public class WorldRenderableProvider implements RenderableProvider {
 
   public Block getBlock(int x, int y, int z) {
     int chunkIndex = getChunkIndex(x, z);
-    if (chunkIndex != 0)
-      System.out.println("Chunk: " + chunkIndex);
     // I have to flip the axis if they are negative because... Otherwise it doesn't work
     if (x < 0)
       x = CHUNK_SIZE_X - (-x % CHUNK_SIZE_X);
@@ -253,9 +294,14 @@ public class WorldRenderableProvider implements RenderableProvider {
         for (int y = 0; y < 6; y++) {
           chunk.set(x, y, z, blockType.createBlock(x + chunk.getOffset().x / World.BLOCK_DISTANCE, y,
                   z + chunk.getOffset().z / World.BLOCK_DISTANCE));
-          System.out.println("X: " + (x + chunk.getOffset().x / World.BLOCK_DISTANCE) + ", z: " + (z + chunk.getOffset().z / World.BLOCK_DISTANCE));
         }
       }
     }
+  }
+
+  public void addChunk(Chunk newChunk) {
+    var chunkIndex = getChunkIndex(newChunk.getOffset().x, newChunk.getOffset().z);
+    chunks[chunkIndex] = newChunk;
+    dirty[chunkIndex] = true;
   }
 }

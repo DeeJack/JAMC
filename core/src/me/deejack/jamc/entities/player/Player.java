@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import me.deejack.jamc.entities.Entity;
-import me.deejack.jamc.world.World;
+import me.deejack.jamc.utils.WorldUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -56,8 +56,8 @@ public class Player implements Entity {
   }
 
   public Vector3 getPosition() {
-    return camera.position.cpy().scl(1 / (float) World.BLOCK_DISTANCE);
-    //return camera.position.cpy();
+    return WorldUtils.toBlockCoordinates(camera.position);
+    //return camera.position.cpy().scl(1 / (float) World.BLOCK_DISTANCE);
   }
 
   @Override

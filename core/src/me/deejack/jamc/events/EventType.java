@@ -20,7 +20,12 @@ public @interface EventType {
     MESSAGE_SENT,
     COMMAND_SENT,
     INVENTORY_OPEN,
-    MOUSE_SCROLL;
+    MOUSE_SCROLL,
+    CHUNK_CHANGE,
+    CHUNK_LOADED,
+    CHUNK_UNLOADED,
+    REGION_LOADED,
+    REGION_UNLOADED;
   }
 }
 

@@ -16,7 +16,6 @@ import me.deejack.jamc.hud.settings.SettingsPage;
 import me.deejack.jamc.hud.utils.DebugHud;
 import me.deejack.jamc.input.*;
 import me.deejack.jamc.items.Items;
-import me.deejack.jamc.textures.TextureCache;
 import me.deejack.jamc.world.World;
 
 public class JAMC implements ApplicationListener {
@@ -34,7 +33,7 @@ public class JAMC implements ApplicationListener {
   @Override
   public void create() {
     var camera = new PerspectiveCamera(90, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // Set the width, height and a FOV of 70
-    camera.position.set(10f, 65f, 10f); // we set the position 10 pixels to the right, 10 up and 10 to the back (z
+    camera.position.set(32f, 65f, 32f); // we set the position 10 pixels to the right, 10 up and 10 to the back (z
     // is positive towards the viewer)
     //camera.lookAt(0f, 0f, 0f); // We look at the origin, where the object will be placed
     camera.near = 1f; // we set the near and far values
@@ -54,7 +53,8 @@ public class JAMC implements ApplicationListener {
       currentPlayer.getInventory().addItem(itemType.createItem(), index--);
     }
 
-    world = new World(currentPlayer, TextureCache.getTiles(), TextureCache.getFullTexture()); // Create the world
+    // TODO: custom name for the world
+    world = new World("asd", currentPlayer); // Create the world
     world.create();
 
     hud = new Hud(new InventoryHud(currentPlayer.getInventory())); // Initialize the hud (crosshair, fps counter etc.)
@@ -67,7 +67,10 @@ public class JAMC implements ApplicationListener {
     // one behind!
     //Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
     //Gdx.gl20.glCullFace(GL20.GL_BACK);
-    Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
+    //Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
+
+    Gdx.gl20.glEnable(Gdx.gl20.GL_CULL_FACE);
+    Gdx.gl20.glCullFace(Gdx.gl20.GL_BACK);
     // By changing the front face it's possible to see that it's actually working,
     // as only the back would be loaded using the code in the line after this
     // Gdx.gl20.glFrontFace(GL20.GL_CW);

@@ -31,7 +31,6 @@ public class EventHandler {
   }
 
   public void publish(EventType.EventTypes eventType, EventData eventData) {
-    System.out.println("Called " + eventType);
     var eventSubscribers = subscribers.getOrDefault(eventType, new ArrayList<>());
 
     eventSubscribers.sort(Comparator.comparing(EventWrapper::getPriority));
@@ -40,7 +39,6 @@ public class EventHandler {
   }
 
   public <T extends EventData> void subscribe(EventType.EventTypes eventType, Event<T> event) {
-    System.out.println("Subscribed to " + eventType);
     var eventSubscribers = subscribers.computeIfAbsent(eventType, k -> new ArrayList<>());
 
     var eventMethod = event.getClass().getMethods()[0];
@@ -56,7 +54,6 @@ public class EventHandler {
   public <T extends EventData> void subscribe(EventCollection event) {
     var eventClass = event.getClass();
     for (var method : eventClass.getMethods()) {
-      System.out.println("Registering method");
       if (method.getParameterCount() != 1)
         continue;
 
@@ -64,7 +61,6 @@ public class EventHandler {
       if (!(eventDataParameter.getType().getSuperclass() == EventData.class || (eventDataParameter.getType().getSuperclass() != null &&
               eventDataParameter.getType().getSuperclass().getSuperclass() == EventData.class))) // IF the parameter is subclass of 'EventData'
         continue;
-      System.out.println("Method accepted");
       EventType.EventTypes eventType = null;
       if (method.isAnnotationPresent(EventType.class))
         eventType = method.getAnnotation(EventType.class).eventType();
@@ -87,29 +83,19 @@ public class EventHandler {
           continue;
       } else
         continue;
-      System.out.println("Parameter of EventData class");
       Priority.Priorities priority = Priority.Priorities.NORMAL;
       if (method.isAnnotationPresent(Priority.class)) {
         priority = method.getAnnotation(Priority.class).priority();
       }
 
-      System.out.println("Subscribed to " + eventType);
       var eventSubscribers = subscribers.computeIfAbsent(eventType, k -> new ArrayList<>());
 
       eventSubscribers.add(new EventWrapper(event, method, priority));
     }
   }
 
-  public final static class EventWrapper {
-    private final Priority.Priorities priority;
-    private final Method event;
-    private final Object instance;
-
-    public EventWrapper(Object instance, Method event, Priority.Priorities priority) {
-      this.instance = instance;
-      this.event = event;
-      this.priority = priority;
-    }
+  public record EventWrapper(Object instance, Method event,
+                             Priority.Priorities priority) {
 
     public void call(EventData data) {
       try {
