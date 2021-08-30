@@ -23,13 +23,15 @@ public class World {
   public static final int BLOCK_DISTANCE = 4;
   private final Player player;
   private final Array<Entity> entities = new Array<>();
+  private final String name;
   public boolean collision = false;
   private Environment environment;
   private ModelBatch batch;
   private WorldRenderableProvider testWorld;
   private int lastCollisionCheck = 0;
 
-  public World(Player player) {
+  public World(String name, Player player) {
+    this.name = name;
     this.player = player;
     entities.add(player);
   }
@@ -178,5 +180,9 @@ public class World {
 
   public Block getBlock(Vector3 coordinates) {
     return testWorld.getBlock((int) coordinates.x, (int) coordinates.y, (int) coordinates.z);
+  }
+
+  public String getName() {
+    return name;
   }
 }
