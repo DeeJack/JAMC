@@ -9,8 +9,6 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.deejack.jamc.entities.player.Player;
-import me.deejack.jamc.events.EventHandler;
-import me.deejack.jamc.events.TestEvent;
 import me.deejack.jamc.hud.Hud;
 import me.deejack.jamc.hud.InventoryHud;
 import me.deejack.jamc.hud.UserInterface;
@@ -35,7 +33,7 @@ public class JAMC implements ApplicationListener {
   @Override
   public void create() {
     var camera = new PerspectiveCamera(90, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); // Set the width, height and a FOV of 70
-    camera.position.set(10f, 65f, 10f); // we set the position 10 pixels to the right, 10 up and 10 to the back (z
+    camera.position.set(32f, 65f, 32f); // we set the position 10 pixels to the right, 10 up and 10 to the back (z
     // is positive towards the viewer)
     //camera.lookAt(0f, 0f, 0f); // We look at the origin, where the object will be placed
     camera.near = 1f; // we set the near and far values
@@ -55,7 +53,8 @@ public class JAMC implements ApplicationListener {
       currentPlayer.getInventory().addItem(itemType.createItem(), index--);
     }
 
-    world = new World(currentPlayer); // Create the world
+    // TODO: custom name for the world
+    world = new World("asd", currentPlayer); // Create the world
     world.create();
 
     hud = new Hud(new InventoryHud(currentPlayer.getInventory())); // Initialize the hud (crosshair, fps counter etc.)
@@ -98,7 +97,7 @@ public class JAMC implements ApplicationListener {
     profiler = new GLProfiler(Gdx.graphics);
     profiler.enable();
 
-    EventHandler.registerEvent(new TestEvent());
+    //EventHandler.registerEvent(new TestEvent());
     music.setVolume(MASTER_VOLUME / 100F);
     music.play();
   }

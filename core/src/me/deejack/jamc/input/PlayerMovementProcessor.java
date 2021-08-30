@@ -10,6 +10,7 @@ import me.deejack.jamc.events.EventHandler;
 import me.deejack.jamc.events.EventType;
 import me.deejack.jamc.events.presets.MouseEvent;
 import me.deejack.jamc.events.presets.PlayerEvent;
+import me.deejack.jamc.utils.WorldUtils;
 import me.deejack.jamc.world.World;
 
 import java.util.HashSet;
@@ -184,7 +185,7 @@ public class PlayerMovementProcessor implements InputProcessor {
       if (translationAxis.equals(new Vector3())) // It's not a movement
         continue;
 
-      var eventData = new PlayerEvent.PlayerEventData(finalPosition, player);
+      var eventData = new PlayerEvent.PlayerEventData(WorldUtils.toBlockCoordinates(finalPosition), player);
       EventHandler.call(EventType.EventTypes.PLAYER_MOVE, eventData);
       if (eventData.isCancelled())
         continue;
