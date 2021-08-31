@@ -17,15 +17,14 @@ import me.deejack.jamc.entities.player.Player;
 import me.deejack.jamc.textures.TextureCache;
 import me.deejack.jamc.world.Block;
 import me.deejack.jamc.world.Blocks;
-import me.deejack.jamc.world.World;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class WorldRenderableProvider implements RenderableProvider {
-  private final static int CHUNK_SIZE_X = 16;
-  private final static int CHUNK_SIZE_Y = 128;
-  private final static int CHUNK_SIZE_Z = 16;
+  private final static short CHUNK_SIZE_X = 16;
+  private final static short CHUNK_SIZE_Y = 128;
+  private final static short CHUNK_SIZE_Z = 16;
   public static int CHUNKS_TO_RENDER = 9;
   /**
    * The chunks currently in memory
@@ -131,14 +130,14 @@ public class WorldRenderableProvider implements RenderableProvider {
     return new Vector2(rowIndex * CHUNK_SIZE_X, colIndex * CHUNK_SIZE_Z);
   }
 
-  public void placeBlock(int x, int y, int z, Block block) {
+  public void placeBlock(int x, int y, int z, Blocks blockType) {
     int chunkIndex = getChunkIndex(x, z);
     // I have to flip the axis if they are negative because... Otherwise it doesn't work
     if (x < 0)
       x = CHUNK_SIZE_X - (-x % CHUNK_SIZE_X);
     if (z < 0)
       z = CHUNK_SIZE_Z - (-z % CHUNK_SIZE_Z);
-    chunks[chunkIndex].set(Math.abs(x % CHUNK_SIZE_X), y, Math.abs(z % CHUNK_SIZE_Z), block);
+    chunks[chunkIndex].set(Math.abs(x % CHUNK_SIZE_X), y, Math.abs(z % CHUNK_SIZE_Z), blockType);
     dirty[chunkIndex] = true;
   }
 
@@ -204,7 +203,7 @@ public class WorldRenderableProvider implements RenderableProvider {
   public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
     lastRenderedChunks = 0;
     // TODO: load chunks from the current chunk to the others
-    /*int currentChunkIndex = getChunkIndex(player.getPosition().x, player.getPosition().z);
+    int currentChunkIndex = getChunkIndex(player.getPosition().x, player.getPosition().z);
     var chunksToRender = new ArrayList<Integer>();
 
     int chunkToLoad = currentChunkIndex - (chunksPerRow * (CHUNKS_TO_RENDER - 2)) - (int) Math.floor(CHUNKS_TO_RENDER / 2F); // Starting with the one on the left of the top one
@@ -240,8 +239,8 @@ public class WorldRenderableProvider implements RenderableProvider {
       renderable.meshPart.primitiveType = GL20.GL_TRIANGLES;
       renderables.add(renderable);
       lastRenderedChunks++;
-    }*/
-
+    }
+/*
     for (int i = 0; i < chunks.length; i++) {
       var chunk = chunks[i];
       var mesh = meshes[i];
@@ -262,7 +261,7 @@ public class WorldRenderableProvider implements RenderableProvider {
       renderable.meshPart.primitiveType = GL20.GL_TRIANGLES;
       renderables.add(renderable);
       lastRenderedChunks++;
-    }
+    }*/
 
     if (JAMC.DEBUG)
       System.out.println("Render " + lastRenderedChunks + " chunks");
@@ -289,11 +288,13 @@ public class WorldRenderableProvider implements RenderableProvider {
 
   public void fillChunk(int chunkIndex, Blocks blockType) {
     var chunk = chunks[chunkIndex];
+    dirty[chunkIndex] = true;
     for (int x = 0; x < CHUNK_SIZE_X; x++) {
       for (int z = 0; z < CHUNK_SIZE_Z; z++) {
         for (int y = 0; y < 6; y++) {
-          chunk.set(x, y, z, blockType.createBlock(x + chunk.getOffset().x / World.BLOCK_DISTANCE, y,
-                  z + chunk.getOffset().z / World.BLOCK_DISTANCE));
+          chunk.set(x, y, z, blockType);
+          //blockType.createBlock(x + chunk.getOffset().x / World.BLOCK_DISTANCE, y,
+          //        z + chunk.getOffset().z / World.BLOCK_DISTANCE));
         }
       }
     }

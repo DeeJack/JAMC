@@ -52,8 +52,9 @@ public final class WorldUtils {
     for (int x = 0; x < CHUNK_SIZE_X; x++) {
       for (int z = 0; z < CHUNK_SIZE_Z; z++) {
         for (int y = 0; y < 6; y++) {
-          chunk.set(x, y, z, blockType.createBlock(x + chunk.getOffset().x / World.BLOCK_DISTANCE, y,
-                  z + chunk.getOffset().z / World.BLOCK_DISTANCE));
+          chunk.set(x, y, z, blockType);
+          //.createBlock(x + chunk.getOffset().x / World.BLOCK_DISTANCE, y,
+          //       z + chunk.getOffset().z / World.BLOCK_DISTANCE));
         }
       }
     }

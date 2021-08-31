@@ -58,20 +58,20 @@ public class World {
       }
     }*/
 
-    testWorld = new WorldRenderableProvider(player, 121);
+    testWorld = new WorldRenderableProvider(player, 576);
     // TODO: fill chunk method
     testWorld.fillChunk(0, Blocks.GRASS);
     Random random = new Random();
 
-    for (int i = 1; i < 121; i++) {
+    for (int i = 1; i < 576; i++) {
       Blocks blockType = Blocks.values()[random.nextInt(Blocks.values().length)];
       testWorld.fillChunk(i, blockType);
     }
 
     for (int x = 0; x < 16; x++) {
       for (int z = 0; z < 16; z++) {
-        var grass = Blocks.GRASS.createBlock(x, 6, z);
-        testWorld.placeBlock(x, 6, z, grass);
+        // var grass = Blocks.GRASS.createBlock(x, 6, z);
+        testWorld.placeBlock(x, 6, z, Blocks.GRASS);
       }
     }
   }
@@ -155,7 +155,7 @@ public class World {
    */
   public Block placeBlock(Blocks block, Vector3 coordinates) {
     Block newBlock = block.createBlock(coordinates.x, coordinates.y, coordinates.z);
-    testWorld.placeBlock((int) coordinates.x, (int) coordinates.y, (int) coordinates.z, newBlock);
+    testWorld.placeBlock((int) coordinates.x, (int) coordinates.y, (int) coordinates.z, block);
     return newBlock;
   }
 
