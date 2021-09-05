@@ -12,8 +12,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import me.deejack.jamc.JAMC;
+import me.deejack.jamc.chunks.ChunkLoadedEvent;
+import me.deejack.jamc.chunks.ChunkLoader;
 import me.deejack.jamc.entities.Entity;
 import me.deejack.jamc.entities.player.Player;
+import me.deejack.jamc.events.EventHandler;
 import me.deejack.jamc.rendering.WorldRenderableProvider;
 
 import java.util.List;
@@ -58,15 +61,16 @@ public class World {
       }
     }*/
 
-    testWorld = new WorldRenderableProvider(player, 576);
+    testWorld = new WorldRenderableProvider(player, 256);
+    EventHandler.registerEvent(new ChunkLoadedEvent(testWorld, new ChunkLoader()));
     // TODO: fill chunk method
     testWorld.fillChunk(0, Blocks.GRASS);
     Random random = new Random();
 
-    for (int i = 1; i < 576; i++) {
-      Blocks blockType = Blocks.values()[random.nextInt(Blocks.values().length)];
-      testWorld.fillChunk(i, blockType);
-    }
+    //for (int i = 1; i < 25; i++) {
+    //  Blocks blockType = Blocks.values()[random.nextInt(Blocks.values().length)];
+    //  testWorld.fillChunk(i, blockType);
+    //}
 
     for (int x = 0; x < 16; x++) {
       for (int z = 0; z < 16; z++) {

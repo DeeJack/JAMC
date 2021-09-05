@@ -12,7 +12,7 @@ public final class WorldUtils {
   public static final int CHUNK_SIZE_X = 16;
   public static final int CHUNK_SIZE_Y = 128;
   public static final int CHUNK_SIZE_Z = 16;
-  public static final int CHUNKS_PER_ROW = 16;
+  public static final int CHUNKS_PER_ROW = 32;
 
   private final static Random random = new Random();
 

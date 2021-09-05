@@ -32,7 +32,7 @@ public class Chunk {
   /**
    * The blocks in the chunk
    */
-  private final ResizableArray<Blocks> blocks;
+  private ResizableArray<Blocks> blocks;
 
   /**
    * The offset of the chunk compared to the world's coordinates
@@ -290,5 +290,13 @@ public class Chunk {
 
   public Vector3 getOffset() {
     return offset;
+  }
+
+  public ResizableArray<Blocks> getBlocks() {
+    return blocks;
+  }
+
+  public void setBlocks(ResizableArray<Blocks> blocks) {
+    this.blocks = blocks;
   }
 }

@@ -276,6 +276,10 @@ public class WorldRenderableProvider implements RenderableProvider {
     return chunks[chunkIndex];
   }
 
+  public Chunk getChunk(int chunkIndex) {
+    return chunks[chunkIndex];
+  }
+
   public Block getBlock(int x, int y, int z) {
     int chunkIndex = getChunkIndex(x, z);
     // I have to flip the axis if they are negative because... Otherwise it doesn't work
@@ -302,7 +306,14 @@ public class WorldRenderableProvider implements RenderableProvider {
 
   public void addChunk(Chunk newChunk) {
     var chunkIndex = getChunkIndex(newChunk.getOffset().x, newChunk.getOffset().z);
-    chunks[chunkIndex] = newChunk;
-    dirty[chunkIndex] = true;
+    addChunk(chunkIndex, newChunk);
+  }
+
+  public void addChunk(int index, Chunk newChunk) {
+    System.out.print("Adding chunk at: " + index + "\t");
+    if (index < 0 || index > chunks.length)
+      return;
+    chunks[index] = newChunk;
+    dirty[index] = true;
   }
 }
