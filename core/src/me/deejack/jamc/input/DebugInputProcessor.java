@@ -17,13 +17,16 @@ public class DebugInputProcessor implements InputProcessor {
   @Override
   public boolean keyDown(int keycode) {
     switch (keycode) {
-      case Input.Keys.F1 -> {
-        vsyncEnabled ^= true;
-        Gdx.graphics.setVSync(vsyncEnabled);
-        DebugHud.INSTANCE.displayText(0, "VSYNC: " + (vsyncEnabled ? "On" : "Off"), (int) camera.viewportWidth - 100, (int) camera.viewportHeight - 10);
-        //DebugHud.INSTANCE.displayText("VSYNC2: " + (vsyncEnabled ? "On" : "Off"), 0, 0);
-        //DebugHud.INSTANCE.displayText("VSYNC3: " + (vsyncEnabled ? "On" : "Off"), 100, 100);
-      }
+    case Input.Keys.F1 -> {
+      vsyncEnabled ^= true;
+      Gdx.graphics.setVSync(vsyncEnabled);
+      DebugHud.INSTANCE.displayText(0, "VSYNC: " + (vsyncEnabled ? "On" : "Off"), (int) camera.viewportWidth - 100,
+          (int) camera.viewportHeight - 10);
+      // DebugHud.INSTANCE.displayText("VSYNC2: " + (vsyncEnabled ? "On" : "Off"), 0,
+      // 0);
+      // DebugHud.INSTANCE.displayText("VSYNC3: " + (vsyncEnabled ? "On" : "Off"),
+      // 100, 100);
+    }
     }
     return false;
   }
@@ -60,6 +63,11 @@ public class DebugInputProcessor implements InputProcessor {
 
   @Override
   public boolean scrolled(float amountX, float amountY) {
+    return false;
+  }
+
+  @Override
+  public boolean touchCancelled(int a, int b, int c, int d) {
     return false;
   }
 }

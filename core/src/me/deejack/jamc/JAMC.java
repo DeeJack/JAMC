@@ -76,7 +76,7 @@ public class JAMC implements ApplicationListener {
     // Gdx.gl20.glFrontFace(GL20.GL_CW);
 
     // Add the input processors, first the UI, then the logic part (breaking/placing blocks), then the movement
-    music = Gdx.app.getAudio().newMusic(Gdx.files.internal("music/music.mp3"));
+    // music = Gdx.app.getAudio().newMusic(Gdx.files.internal("music/music.mp3"));
     InputMultiplexer multipleInput = new InputMultiplexer();
 
     mainSettingsPage = new SettingsPage(currentPlayer, music);
@@ -98,8 +98,8 @@ public class JAMC implements ApplicationListener {
     profiler.enable();
 
     //EventHandler.registerEvent(new TestEvent());
-    music.setVolume(MASTER_VOLUME / 100F);
-    music.play();
+    // music.setVolume(MASTER_VOLUME / 100F);
+    // music.play();
   }
 
   public void render() {

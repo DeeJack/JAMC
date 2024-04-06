@@ -54,4 +54,9 @@ public class EventInputProcessor implements InputProcessor {
     EventHandler.call(EventType.EventTypes.MOUSE_SCROLL, eventData);
     return eventData.isCancelled();
   }
+
+  @Override
+  public boolean touchCancelled(int a, int b, int c, int d) {
+    return false;
+  }
 }

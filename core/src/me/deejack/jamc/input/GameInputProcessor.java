@@ -168,4 +168,9 @@ public class GameInputProcessor implements InputProcessor {
   public boolean scrolled(float amountX, float amountY) {
     return false;
   }
+
+  @Override
+  public boolean touchCancelled(int a, int b, int c, int d) {
+    return false;
+  }
 }

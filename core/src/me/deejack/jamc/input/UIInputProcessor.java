@@ -91,4 +91,9 @@ public class UIInputProcessor implements InputProcessor {
     return ui.isGamePaused() || ui.isInventoryOpen();
   }
 
+  @Override
+  public boolean touchCancelled(int a, int b, int c, int d) {
+    return false;
+  }
+
 }

@@ -234,4 +234,9 @@ public class PlayerMovementProcessor implements InputProcessor {
       player.setJumping(false);
     }
   }
+
+  @Override
+  public boolean touchCancelled(int a, int b, int c, int d) {
+    return false;
+  }
 }
