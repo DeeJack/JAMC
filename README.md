@@ -1,6 +1,8 @@
 # JAMC
 Just another Minecraft clone.
 
+**To clarify, I developed this project in 2021. The only things I did in 2024 are upgrading to Java 21 and update the README.**
+
 This project is terrible. I developed this while knowing nothing about game dev, about LWJGL3, geometry and who knows what else.
 I spent a lot of time trying to make things work, but the result is barely functional. Furthermore, I would say that I learned a lot from this project, but no, I barely remember anything about it after just a few years. However, I do remember the frustration I felt in trying to fix things.
 
